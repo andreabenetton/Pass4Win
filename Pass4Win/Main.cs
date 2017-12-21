@@ -25,7 +25,6 @@ namespace Pass4Win
     using System.Text;
     using System.Windows.Forms;
     using Autofac;
-    using Bugsnag.Clients;
     using GpgApi;
     using Octokit;
     using Application = System.Windows.Forms.Application;
@@ -73,9 +72,6 @@ namespace Pass4Win
             InitializeComponent();
             toolStripStatusLabel1.Text = "";
 
-            log.Debug(() => "init Bugsnag");
-            var bugsnag = new BaseClient("eabc4288b86be52f98276a8aa150fae8");
-
             this.enableTray = false;
             // Getting actual version
             log.Debug(() => "Getting program version");
@@ -109,7 +105,6 @@ namespace Pass4Win
 
             // checking for update in the background
             log.Debug(() => "Checking online for latest release");
-            LatestPass4WinRelease();
 
             // making new git object
             if (_config["ExternalGit"] && !Program.NoGit)
@@ -226,36 +221,6 @@ namespace Pass4Win
             set
             {
                 base.Text = value;
-            }
-        }
-
-        /// <summary>
-        ///     Async latest version checker, gives a popup if a different version is detected
-        /// </summary>
-        /// <returns></returns>
-        public async void LatestPass4WinRelease()
-        {
-            var client = new GitHubClient(new ProductHeaderValue("Pass4Win"));
-            var releaseClient = client.Repository.Release;
-            var releases = await releaseClient.GetAll("mbos", "Pass4Win");
-
-            // online version
-            var newversion = releases[0].TagName.Remove(0, 8);
-            if (newversion.Length > 5) newversion = newversion.Remove(5);
-
-            // if diff warn and redirect
-            if (_config["version"] != newversion)
-            {
-                var result = MessageBox.Show(
-                    Strings.Info_new_version,
-                    Strings.Info_new_version_caption,
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Information);
-                if (result == DialogResult.OK)
-                {
-                    // start browser
-                    Process.Start("https://github.com/mbos/Pass4Win/releases");
-                }
             }
         }
 

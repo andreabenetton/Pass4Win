@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using Newtonsoft.Json;
     using System.IO.IsolatedStorage;
     using Pass4Win.Logging;
 
@@ -93,7 +92,10 @@
             cachedPassValidTime = 0;  // reset cache so a new config value will apply
 
             log.Debug("Saving config");
-            string json = JsonConvert.SerializeObject(this.values, Formatting.Indented);
+
+
+
+            string json = SimpleJson.SerializeObject(this.values);
             IsolatedStorageFileStream isoStream = null;
 
             try
@@ -166,7 +168,7 @@
 
                 try
                 {
-                    this.values = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                    this.values = SimpleJson.DeserializeObject<Dictionary<string, object>>(json);
                 }
                 catch (Exception message)
                 {

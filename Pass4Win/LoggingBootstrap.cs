@@ -9,7 +9,7 @@
 
         public static void Configure()
         {
-            var logFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Pass4Win", "Pass4Win.log");
+            var logFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Pass4Win.log");
             var logLayout = "{Timestamp:HH:mm} [{Level}] ({ThreadId}) {Message}{NewLine}{Exception}";
 
             Log.Logger = new LoggerConfiguration()

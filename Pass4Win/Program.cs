@@ -25,17 +25,11 @@ namespace Pass4Win
         {
             // parsing command line
             string[] args = Environment.GetCommandLineArgs();
-            string PersonalFolder = Path.GetTempPath() + "Pass4Win.log";
+            
 
             var options = new CmdLineOptions();
             if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
-                // consume Options instance properties
-                if (options.Debug)
-                {
-                    PersonalFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\Pass4Win.log";
-                }
-
                 if (options.Reset)
                 {
                     IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
@@ -46,9 +40,6 @@ namespace Pass4Win
             }
 
             // setting up logging
-
-            Environment.SetEnvironmentVariable("log4netFileName", PersonalFolder + "\\Pass4Win.log");
-
             LoggingBootstrap.Configure();
 
             log.Debug(() => "Application started");
