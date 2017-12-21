@@ -1,10 +1,7 @@
-﻿
-
-namespace Pass4WinTests
+﻿namespace Pass4WinTests
 {
-    using System.IO;
     using Autofac;
-    using Moq;
+    using NSubstitute;
     using Pass4Win;
 
     public static class Setup
@@ -13,11 +10,11 @@ namespace Pass4WinTests
 
         public static void InitializeContainer()
         {
-            var directoryProviderMock = new Mock<IDirectoryProvider>();
+            var directoryProviderMock = Substitute.For<IDirectoryProvider>();
+
 
             ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterInstance(directoryProviderMock).As<Mock<IDirectoryProvider>>();
-            builder.RegisterInstance(directoryProviderMock.Object).As<IDirectoryProvider>();
+            builder.RegisterInstance(directoryProviderMock).As<IDirectoryProvider>();
             builder.RegisterInstance(new ConfigHandling()).AsSelf();
             builder.RegisterType<FrmKeyManager>().AsSelf();
             builder.RegisterType<FileSystemInterface>().AsSelf();

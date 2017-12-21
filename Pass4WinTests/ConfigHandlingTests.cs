@@ -3,6 +3,7 @@
     using System;
     using NUnit.Framework;
     using Pass4Win;
+    using Shouldly;
 
     [TestFixture]
     public class ConfigHandlingTests

@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Autofac;
-using Moq;
-using NUnit.Framework;
-using Pass4Win;
-
-namespace Pass4WinTests
+﻿namespace Pass4WinTests
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using Autofac;
+    using NSubstitute;
+    using NUnit.Framework;
+    using Pass4Win;
+    using Shouldly;
+
     [TestFixture]
     public class FileSystemInterfaceTests
     {
@@ -17,32 +18,33 @@ namespace Pass4WinTests
         }
        
         [Test]
-        public void FindMixedCaseFileWIthLowerCaseSearch()
+        public void FindMixedCaseFileWithLowerCaseSearch()
         {
             var fileNameToFind = "caseSensitiveFile.gpg";
             var anotherFile = "somefile.gpg";
-            var fileMockOne = new Mock<IFileProvider>();
-            var fileMockTwo = new Mock<IFileProvider>();
-            fileMockOne.SetupAllProperties();
-            fileMockOne.Object.Name = fileNameToFind;
-            fileMockOne.Object.FullName = fileNameToFind;
-            fileMockTwo.SetupAllProperties();
-            fileMockTwo.Object.Name = anotherFile;
-            fileMockTwo.Object.FullName = anotherFile;
+
+            var fileMockOne = Substitute.For<IFileProvider>();
+            var fileMockTwo = Substitute.For<IFileProvider>();
+            
+            fileMockOne.Name = fileNameToFind;
+            fileMockOne.FullName = fileNameToFind;
+            
+            fileMockTwo.Name = anotherFile;
+            fileMockTwo.FullName = anotherFile;
+
             var fileProviderMockList = new List<IFileProvider>
             {
-                fileMockOne.Object,
-                fileMockTwo.Object
+                fileMockOne,
+                fileMockTwo
             };
 
-            var directoryProviderMock = Setup.Scope.Resolve<Mock<IDirectoryProvider>>();
-            directoryProviderMock.Setup(
-                m => m.GetFiles(It.IsAny<string>(), It.Is<SearchOption>(so => so == SearchOption.AllDirectories)))
-                .Returns(fileProviderMockList.ToArray());
+            var directoryProvider = Setup.Scope.Resolve<IDirectoryProvider>();
+            directoryProvider.GetFiles(Arg.Any<string>(), Arg.Is<SearchOption>(so => so == SearchOption.AllDirectories)).Returns(fileProviderMockList.ToArray());
+            
             var fsi = Setup.Scope.Resolve<FileSystemInterface>();
             fsi.Search(fileNameToFind.ToLower());
-            Assert.AreEqual(1, fsi.SearchList.Count);
-            Assert.AreEqual(fileNameToFind, fsi.SearchList[0]);
+            fsi.SearchList.Count.ShouldBe(1);
+            fsi.SearchList[0].ShouldBe(fileNameToFind);
         }
 
         [Test]
@@ -50,28 +52,28 @@ namespace Pass4WinTests
         {
             var fileNameToFind = "caseSensitiveFile.gpg";
             var anotherFile = "somefile.gpg";
-            var fileMockOne = new Mock<IFileProvider>();
-            var fileMockTwo = new Mock<IFileProvider>();
-            fileMockOne.SetupAllProperties();
-            fileMockOne.Object.Name = fileNameToFind;
-            fileMockOne.Object.FullName = fileNameToFind;
-            fileMockTwo.SetupAllProperties();
-            fileMockTwo.Object.Name = anotherFile;
-            fileMockTwo.Object.FullName = anotherFile;
+
+            var fileMockOne = Substitute.For<IFileProvider>();
+            var fileMockTwo = Substitute.For<IFileProvider>();
+
+            fileMockOne.Name = fileNameToFind;
+            fileMockOne.FullName = fileNameToFind;
+
+            fileMockTwo.Name = anotherFile;
+            fileMockTwo.FullName = anotherFile;
             var fileProviderMockList = new List<IFileProvider>
             {
-                fileMockOne.Object,
-                fileMockTwo.Object
+                fileMockOne,
+                fileMockTwo
             };
 
-            var directoryProviderMock = Setup.Scope.Resolve<Mock<IDirectoryProvider>>();
-            directoryProviderMock.Setup(
-                m => m.GetFiles(It.IsAny<string>(), It.Is<SearchOption>(so => so == SearchOption.AllDirectories)))
-                .Returns(fileProviderMockList.ToArray());
+            var directoryProvider = Setup.Scope.Resolve<IDirectoryProvider>();
+            directoryProvider.GetFiles(Arg.Any<string>(), Arg.Is<SearchOption>(so => so == SearchOption.AllDirectories)).Returns(fileProviderMockList.ToArray());
+
             var fsi = Setup.Scope.Resolve<FileSystemInterface>();
-            fsi.Search(fileNameToFind);
-            Assert.AreEqual(1, fsi.SearchList.Count);
-            Assert.AreEqual(fileNameToFind, fsi.SearchList[0]);
+            fsi.Search(fileNameToFind.ToLower());
+            fsi.SearchList.Count.ShouldBe(1);
+            fsi.SearchList[0].ShouldBe(fileNameToFind);
         }
 
         [Test]
@@ -79,29 +81,29 @@ namespace Pass4WinTests
         {
             var file = "caseSensitiveFile.gpg";
             var anotherFile = "somefile.gpg";
-            var fileMockOne = new Mock<IFileProvider>();
-            var fileMockTwo = new Mock<IFileProvider>();
-            fileMockOne.SetupAllProperties();
-            fileMockOne.Object.Name = file;
-            fileMockOne.Object.FullName = file;
-            fileMockTwo.SetupAllProperties();
-            fileMockTwo.Object.Name = anotherFile;
-            fileMockTwo.Object.FullName = anotherFile;
+
+            var fileMockOne = Substitute.For<IFileProvider>();
+            var fileMockTwo = Substitute.For<IFileProvider>();
+
+            fileMockOne.Name = file;
+            fileMockOne.FullName = anotherFile;
+
+            fileMockTwo.Name = anotherFile;
+            fileMockTwo.FullName = anotherFile;
             var fileProviderMockList = new List<IFileProvider>
             {
-                fileMockOne.Object,
-                fileMockTwo.Object
+                fileMockOne,
+                fileMockTwo
             };
 
-            var directoryProviderMock = Setup.Scope.Resolve<Mock<IDirectoryProvider>>();
-            directoryProviderMock.Setup(
-                m => m.GetFiles(It.IsAny<string>(), It.Is<SearchOption>(so => so == SearchOption.AllDirectories)))
-                .Returns(fileProviderMockList.ToArray());
+            var directoryProvider = Setup.Scope.Resolve<IDirectoryProvider>();
+            directoryProvider.GetFiles(Arg.Any<string>(), Arg.Is<SearchOption>(so => so == SearchOption.AllDirectories)).Returns(fileProviderMockList.ToArray());
+
             var fsi = Setup.Scope.Resolve<FileSystemInterface>();
             fsi.Search("*.*");
-            Assert.AreEqual(2, fsi.SearchList.Count);
-            Assert.AreEqual(file, fsi.SearchList[0]);
-            Assert.AreEqual(anotherFile, fsi.SearchList[1]);
+            fsi.SearchList.Count.ShouldBe(2);
+            fsi.SearchList[0].ShouldBe(file);
+            fsi.SearchList[1].ShouldBe(anotherFile);
         }
 
         /// <summary>
@@ -110,22 +112,24 @@ namespace Pass4WinTests
         [Test]
         public void CreateDirectoryTreeNodes()
         {
-            var directoryOne = new Mock<IDirectoryProvider>();
-            directoryOne.SetupAllProperties();
-            directoryOne.Object.FullName = "directoryone";
-            directoryOne.Object.Name = "directoryone";
-            directoryOne.Setup(m => m.GetDirectories()).Returns(new List<IDirectoryProvider>());
-            Setup.Scope.Resolve<Mock<IDirectoryProvider>>()
-                .Setup(m => m.GetDirectories())
+            var directoryOne = Substitute.For<IDirectoryProvider>();
+
+            directoryOne.FullName = "directoryone";
+            directoryOne.Name = "directoryone";
+
+            directoryOne.GetDirectories().Returns(new List<IDirectoryProvider>());
+
+            Setup.Scope.Resolve<IDirectoryProvider>()
+                .GetDirectories()
                 .Returns(new List<IDirectoryProvider>
                 {
-                    directoryOne.Object
+                    directoryOne
                 });
 
             var fsi = Setup.Scope.Resolve<FileSystemInterface>();
             var nodes = fsi.UpdateDirectoryTree();
-            Assert.IsNotNull(nodes);
-            Assert.AreEqual(1, nodes.Length);
+            nodes.ShouldNotBeNull();
+            nodes.Length.ShouldBe(1);
         }
 
         /// <summary>
@@ -136,29 +140,28 @@ namespace Pass4WinTests
         {
             var file = "afile.gpg";
             var anotherFile = "somefile.gpg";
-            var fileMockOne = new Mock<IFileProvider>();
-            var fileMockTwo = new Mock<IFileProvider>();
-            fileMockOne.SetupAllProperties();
-            fileMockOne.Object.Name = file;
-            fileMockOne.Object.FullName = file;
-            fileMockOne.Object.Extension = ".gpg";
-            fileMockTwo.SetupAllProperties();
-            fileMockTwo.Object.Name = anotherFile;
-            fileMockTwo.Object.FullName = anotherFile;
-            fileMockTwo.Object.Extension = ".gpg";
+
+            var fileMockOne = Substitute.For<IFileProvider>();
+            var fileMockTwo = Substitute.For<IFileProvider>();
+
+            fileMockOne.Name = file;
+            fileMockOne.FullName = file;
+            fileMockOne.Extension = ".gpg";
+            fileMockTwo.Name = anotherFile;
+            fileMockTwo.FullName = anotherFile;
+            fileMockTwo.Extension = ".gpg";
             var fileProviderMockList = new List<IFileProvider>
             {
-                fileMockOne.Object,
-                fileMockTwo.Object
+                fileMockOne,
+                fileMockTwo
             };
 
-            var directoryProviderMock = Setup.Scope.Resolve<Mock<IDirectoryProvider>>();
-            directoryProviderMock.Setup(
-                m => m.GetFiles())
-                .Returns(fileProviderMockList.ToArray());
+            var directoryProviderMock = Setup.Scope.Resolve<IDirectoryProvider>();
+            directoryProviderMock.GetFiles().Returns(fileProviderMockList.ToArray());
+            
             var fsi = Setup.Scope.Resolve<FileSystemInterface>();
-            var list = fsi.UpdateDirectoryList(directoryProviderMock.Object);
-            Assert.AreEqual(2, list.Count);
+            var list = fsi.UpdateDirectoryList(directoryProviderMock);
+            list.Count.ShouldBe(2);
         }
     }
 }
