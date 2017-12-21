@@ -26,11 +26,9 @@ namespace Pass4Win
     using System.Windows.Forms;
     using Autofac;
     using GpgApi;
-    using Octokit;
     using Application = System.Windows.Forms.Application;
     using Repository = LibGit2Sharp.Repository;
     using Timer = System.Threading.Timer;
-    using System.Threading;
     using Pass4Win.Logging;
 
     public partial class FrmMain : Form

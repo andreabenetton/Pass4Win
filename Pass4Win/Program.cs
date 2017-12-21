@@ -12,8 +12,9 @@ namespace Pass4Win
     internal static class Program
     {
         public static ILifetimeScope Scope { get; private set; }
+
         // logging
-        private static ILog log = LogProvider.GetCurrentClassLogger();
+        private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
         public static bool NoGit { get; private set; }
 
@@ -25,14 +26,16 @@ namespace Pass4Win
         {
             // parsing command line
             string[] args = Environment.GetCommandLineArgs();
-            
+
 
             var options = new CmdLineOptions();
             if (CommandLine.Parser.Default.ParseArguments(args, options))
             {
                 if (options.Reset)
                 {
-                    IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
+                    IsolatedStorageFile isoStore =
+                        IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null,
+                            null);
                     isoStore.DeleteFile("Pass4Win.json");
                 }
 
@@ -44,7 +47,7 @@ namespace Pass4Win
 
             log.Debug(() => "Application started");
 
-            ThreadExceptionHandler handler = new ThreadExceptionHandler();
+            var handler = new AppExceptionHandler();
 
             Application.ThreadException += handler.Application_ThreadException;
 
@@ -63,8 +66,9 @@ namespace Pass4Win
                     log.Debug(() => "Load main form");
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
-                    try {
-                        
+                    try
+                    {
+
                         Application.Run(Scope.Resolve<FrmMain>());
                     }
                     catch (Exception message)
@@ -74,15 +78,15 @@ namespace Pass4Win
                             log.DebugException("MutexError", message);
                         }
                     }
-                    
+
                 }
                 else
                 {
                     NativeMethods.PostMessage(
-                                    (IntPtr)NativeMethods.HWND_BROADCAST,
-                                    NativeMethods.WM_SHOWME,
-                                    IntPtr.Zero,
-                                    IntPtr.Zero);
+                        (IntPtr) NativeMethods.HWND_BROADCAST,
+                        NativeMethods.WM_SHOWME,
+                        IntPtr.Zero,
+                        IntPtr.Zero);
                 }
             }
         }
@@ -104,59 +108,4 @@ namespace Pass4Win
         }
 
     }
-    /// 
-    /// Handles a thread (unhandled) exception.
-    /// 
-    internal class ThreadExceptionHandler
-    {
-        /// 
-        /// Handles the thread exception.
-        /// 
-        public void Application_ThreadException(
-            object sender, ThreadExceptionEventArgs e)
-        {
-            try
-            {
-                // Exit the program if the user clicks Abort.
-                DialogResult result = ShowThreadExceptionDialog(
-                    e.Exception);
-
-                if (result == DialogResult.Abort)
-                    Application.Exit();
-            }
-            catch
-            {
-                // Fatal error, terminate program
-                try
-                {
-                    MessageBox.Show("Fatal Error",
-                        "Fatal Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Stop);
-                }
-                finally
-                {
-                    Application.Exit();
-                }
-            }
-        }
-
-        /// 
-        /// Creates and displays the error message.
-        /// 
-        private DialogResult ShowThreadExceptionDialog(Exception ex)
-        {
-            string errorMessage =
-                "Unhandled Exception:\n\n" +
-                ex.Message + "\n\n" +
-                ex.GetType() +
-                "\n\nStack Trace:\n" +
-                ex.StackTrace;
-
-            return MessageBox.Show(errorMessage,
-                "Application Error",
-                MessageBoxButtons.AbortRetryIgnore,
-                MessageBoxIcon.Stop);
-        }
-    } // End ThreadExceptionHandler
 }
