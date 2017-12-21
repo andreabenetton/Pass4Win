@@ -170,7 +170,7 @@ namespace Pass4Win
                     }
                     using (var repo = new Repository(_config["PassDirectory"]))
                     {
-                        repo.Stage(tmpFile);
+                        Commands.Stage(repo, tmpFile);
                         repo.Commit("gpgid changed", new Signature("pass4win", "pass4win", DateTimeOffset.Now), new Signature("pass4win", "pass4win", DateTimeOffset.Now));
                     }
                 }

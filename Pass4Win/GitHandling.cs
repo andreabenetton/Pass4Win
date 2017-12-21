@@ -349,7 +349,7 @@ namespace Pass4Win
                     };
                     var mergeOptions = new MergeOptions();
                     var pullOptions = new PullOptions { FetchOptions = fetchOptions, MergeOptions = mergeOptions };
-                    this.gitRepo.Network.Pull(signature, pullOptions);
+                    Commands.Pull(gitRepo, signature, pullOptions);
                 }
                 catch (Exception message)
                 {
@@ -397,7 +397,8 @@ namespace Pass4Win
                     {
                         try
                         {
-                            gitRepo.Stage("*");
+                            Commands.Stage(gitRepo, "*");
+
                             gitRepo.Commit(
                             "password changes",
                             new Signature("pass4win", "pass4win", DateTimeOffset.Now),
@@ -497,7 +498,7 @@ namespace Pass4Win
             {
                 try
                 {
-                    this.gitRepo.Remove(removeFile);
+                    Commands.Remove(gitRepo, removeFile);
                 }
                 catch (Exception message)
                 {

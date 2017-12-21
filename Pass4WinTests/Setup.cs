@@ -7,11 +7,11 @@ namespace Pass4WinTests
     using Moq;
     using Pass4Win;
 
-    static class Setup
+    public static class Setup
     {
-        static internal ILifetimeScope Scope { get; set; }
+        internal static ILifetimeScope Scope { get; set; }
 
-        static internal void InitializeContainer()
+        public static void InitializeContainer()
         {
             var directoryProviderMock = new Mock<IDirectoryProvider>();
 
