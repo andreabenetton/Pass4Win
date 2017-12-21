@@ -5,11 +5,12 @@
     using System.IO;
     using Newtonsoft.Json;
     using System.IO.IsolatedStorage;
+    using Pass4Win.Logging;
 
     public class ConfigHandling
     {
         // Logging
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log = LogProvider.For<ConfigHandling>();
 
         private Dictionary<string, object> values = new Dictionary<string, object>();
         private readonly IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
@@ -30,13 +31,7 @@
         /// <summary>
         ///  Default length of time a password will be kept in the clipboard before clearing, in seconds
         /// </summary>
-        public int DefaultPassValidTime
-        {
-            get
-            {
-                return defaultPassValidTime;
-            }
-        }
+        public int DefaultPassValidTime => defaultPassValidTime;
 
         /// <summary>
         /// Length of time the password is kept in the clipboard before clearing, in seconds.
@@ -62,24 +57,12 @@
         /// <summary>
         /// Bottom end of PassValidTime values, in seconds
         /// </summary>
-        public int PassValidTimeBottom
-        {
-            get
-            {
-                return passValidTimeBottom;
-            }
-        }
+        public int PassValidTimeBottom => passValidTimeBottom;
 
         /// <summary>
         /// Top end of PassValidTime values, in seconds
         /// </summary>
-        public int PassValidTimeTop
-        {
-            get
-            {
-                return passValidTimeTop;
-            }
-        }
+        public int PassValidTimeTop => passValidTimeTop;
 
         /// <summary>
         /// Indexer for the configuration, providing dynamic access to the collection of values in the configuration.</summary>
@@ -125,8 +108,7 @@
             }
             finally
             {
-                if (isoStream != null)
-                    isoStream.Dispose();
+                isoStream?.Dispose();
             }
         }
 
@@ -179,8 +161,7 @@
                 }
                 finally
                 {
-                    if (isoStream != null)
-                        isoStream.Dispose();
+                    isoStream?.Dispose();
                 }
 
                 try
@@ -189,7 +170,7 @@
                 }
                 catch (Exception message)
                 {
-                    log.Debug(message.Message);
+                    log.DebugException(message.Message, message);
                 }
             }
         }

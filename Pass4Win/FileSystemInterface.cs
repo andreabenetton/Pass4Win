@@ -22,6 +22,7 @@ namespace Pass4Win
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
     using Autofac;
+    using Pass4Win.Logging;
 
     /// <summary>
     /// Class to interface with the file system ie read directories and file operations
@@ -32,7 +33,7 @@ namespace Pass4Win
         private readonly IDirectoryProvider _directoryProvider;
 
         // logging
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log = LogProvider.For<FileSystemInterface>();
 
         /// <summary>
         /// Gets the Search list
@@ -56,7 +57,7 @@ namespace Pass4Win
         }
 
         /// <summary>
-        /// Searchs through all the entries
+        /// Searches through all the entries
         /// </summary>
         /// <param name="searchtext">
         /// The searchtext.

@@ -18,13 +18,15 @@ namespace Pass4Win
     using System.Diagnostics;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using Pass4Win.Logging;
+
     /// <summary>
     ///     Class to interface with the Git Repo
     /// </summary>
     public class GitHandling : IDisposable
     {
         // logging
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log = LogProvider.For<GitHandling>();
 
         /// <summary>
         ///     The repo remote location object.
@@ -58,7 +60,7 @@ namespace Pass4Win
         /// </param>
         public GitHandling(string repoLocation, string host, string GitLocation = "null")
         {
-            log.Debug("Init GitHandling");
+            log.Debug(() => "Init GitHandling");
             this.repoLocation = repoLocation;
             this.ExternalGitPath = GitLocation;
             if (GitLocation == "null")
@@ -79,7 +81,7 @@ namespace Pass4Win
 
         private bool GetHost()
         {
-            log.Debug("Getting host from external git executable");
+            log.Debug(() => "Getting host from external git executable");
             string result = ExecuteGitCommand("remote -v");
             Regex linkParser = new Regex(@"\b(?:https?://|git)\S+\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             foreach (Match m in linkParser.Matches(result))
@@ -98,7 +100,7 @@ namespace Pass4Win
         /// </returns>
         public static bool IsValid(string location)
         {
-            log.Debug("Check if repo is valid");
+            log.Debug(() => "Check if repo is valid");
             return Repository.IsValid(location);
         }
 
@@ -113,13 +115,13 @@ namespace Pass4Win
         /// </returns>
         public static bool CheckConnection(string hostName)
         {
-            if (String.IsNullOrEmpty(hostName))
+            if (string.IsNullOrEmpty(hostName))
             {
-                log.Debug("No remote host, connection check auto passed");
+                log.Debug(() => "No remote host, connection check auto passed");
                 return true;
             }
 
-            log.Debug("Check if we have a connection to the remote host");
+            log.Debug(() => "Check if we have a connection to the remote host");
             Uri hostTest;
 
             if (Uri.TryCreate(hostName, UriKind.Absolute, out hostTest))
@@ -167,7 +169,7 @@ namespace Pass4Win
                 }
                 catch (Exception message)
                 {
-                    log.Debug(message);
+                    log.DebugException(message.Message, message);
                     return false;
                 }
             }
@@ -203,7 +205,7 @@ namespace Pass4Win
                     }
                     catch (Exception message)
                     {
-                        log.Debug(message);
+                        log.DebugException(message.Message, message);
                         return false;
                     }
                 }
@@ -215,10 +217,10 @@ namespace Pass4Win
         {
             if (!File.Exists(this.ExternalGitPath))
             {
-                log.Debug("Git executable not found!");
+                log.Debug(() => "Git executable not found!");
                 return ("fatal");
             }
-            log.Debug("Executing: " + command);
+            log.Debug(() => "Executing: " + command);
             ProcessStartInfo gitInfo = new ProcessStartInfo();
             string output = string.Empty;
             string error = string.Empty;
@@ -236,11 +238,11 @@ namespace Pass4Win
             gitProcess.StartInfo = gitInfo;
             gitProcess.Start();
 
-            using (System.IO.StreamReader myOutput = gitProcess.StandardOutput)
+            using (StreamReader myOutput = gitProcess.StandardOutput)
             {
                 output = myOutput.ReadToEnd();
             }
-            using (System.IO.StreamReader myError = gitProcess.StandardError)
+            using (StreamReader myError = gitProcess.StandardError)
             {
                 error = myError.ReadToEnd();
 
@@ -250,8 +252,8 @@ namespace Pass4Win
             gitProcess.Close();
 
             // give the output or the error message
-            log.Debug("Git output: " + output);
-            log.Debug("Git error: " + error);
+            log.Debug(() => "Git output: " + output);
+            log.Debug(() => "Git error: " + error);
             if (error.Length == 0) return output;
             else return error;
         }
@@ -295,7 +297,7 @@ namespace Pass4Win
                 }
                 catch (Exception message)
                 {
-                    log.Debug(message);
+                    log.DebugException(message.Message, message);
                     return false;
                 }
             }
@@ -317,7 +319,7 @@ namespace Pass4Win
         /// </returns>
         public bool Fetch(string gitUser, string gitPass)
         {
-            log.Debug("Fetch on remote repo");
+            log.Debug(() => "Fetch on remote repo");
             if (File.Exists(ExternalGitPath))
             {
                 string GitOutput = ExecuteGitCommand("pull");
@@ -351,7 +353,7 @@ namespace Pass4Win
                 }
                 catch (Exception message)
                 {
-                    log.Debug(message);
+                    log.DebugException(message.Message, message);
                     return false;
                 }
             }
@@ -369,7 +371,7 @@ namespace Pass4Win
         /// </returns>
         public bool Commit(string fileToCommit = null)
         {
-            log.Debug("Commit: " + fileToCommit);
+            log.Debug(() => "Commit: " + fileToCommit);
             // Stage the file
             if (fileToCommit != null)
             {
@@ -403,7 +405,7 @@ namespace Pass4Win
                         }
                         catch (Exception message)
                         {
-                            log.Debug(message);
+                            log.DebugException(message.Message, message);
                             return false;
                         }
                     }
@@ -427,7 +429,7 @@ namespace Pass4Win
         /// </returns>
         public bool Push(string gitUser, string gitPass)
         {
-            log.Debug("Push commits");
+            log.Debug(() => "Push commits");
             if (File.Exists(ExternalGitPath))
             {
                 string GitOutput = ExecuteGitCommand("push");
@@ -462,7 +464,7 @@ namespace Pass4Win
                 }
                 catch (Exception message)
                 {
-                    log.Debug(message);
+                    log.DebugException(message.Message, message);
                     return false;
                 }
             }
@@ -481,7 +483,7 @@ namespace Pass4Win
         /// </returns>
         public bool RemoveFile(string removeFile)
         {
-            log.Debug("Remove: " + removeFile);
+            log.Debug(() => "Remove: " + removeFile);
             if (File.Exists(ExternalGitPath))
             {
                 string GitOutput = ExecuteGitCommand("rm " + removeFile);
@@ -499,7 +501,7 @@ namespace Pass4Win
                 }
                 catch (Exception message)
                 {
-                    log.Debug(message);
+                    log.DebugException(message.Message, message);
                     return false;
                 }
             }

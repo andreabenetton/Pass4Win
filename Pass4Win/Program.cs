@@ -2,17 +2,18 @@
 using System.Windows.Forms;
 using Autofac;
 using System.Threading;
-using log4net.Config;
 using System.IO;
 using System.IO.IsolatedStorage;
 
 namespace Pass4Win
 {
+    using Pass4Win.Logging;
+
     internal static class Program
     {
         public static ILifetimeScope Scope { get; private set; }
         // logging
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static ILog log = LogProvider.GetCurrentClassLogger();
 
         public static bool NoGit { get; private set; }
 
@@ -34,33 +35,31 @@ namespace Pass4Win
                 {
                     PersonalFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\Pass4Win.log";
                 }
+
                 if (options.Reset)
                 {
                     IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
                     isoStore.DeleteFile("Pass4Win.json");
                 }
-                NoGit = false;
-                if (options.NoGit)
-                {
-                    NoGit = true;
-                }
+
+                NoGit = false || options.NoGit;
             }
 
             // setting up logging
 
             Environment.SetEnvironmentVariable("log4netFileName", PersonalFolder + "\\Pass4Win.log");
 
-            XmlConfigurator.Configure();
-            log.Debug("Application started");
+            LoggingBootstrap.Configure();
+
+            log.Debug(() => "Application started");
 
             ThreadExceptionHandler handler = new ThreadExceptionHandler();
 
-            Application.ThreadException +=
-                new ThreadExceptionEventHandler(
-                    handler.Application_ThreadException);
+            Application.ThreadException += handler.Application_ThreadException;
+
             RegisterTypes();
             bool createdNew = true;
-            log.Debug("Checking if not already loaded");
+            log.Debug(() => "Checking if not already loaded");
             using (Mutex mutex = new Mutex(true, "Pass4Win", out createdNew))
             {
                 if (createdNew)
@@ -70,7 +69,7 @@ namespace Pass4Win
                     {
                         NativeMethods.SetProcessDPIAware();
                     }
-                    log.Debug("Load main form");
+                    log.Debug(() => "Load main form");
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     try {
@@ -79,7 +78,10 @@ namespace Pass4Win
                     }
                     catch (Exception message)
                     {
-                        log.Debug(message);
+                        if (log.IsDebugEnabled())
+                        {
+                            log.DebugException("MutexError", message);
+                        }
                     }
                     
                 }

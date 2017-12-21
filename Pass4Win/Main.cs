@@ -24,7 +24,6 @@ namespace Pass4Win
     using System.Security.Cryptography;
     using System.Text;
     using System.Windows.Forms;
-
     using Autofac;
     using Bugsnag.Clients;
     using GpgApi;
@@ -33,10 +32,12 @@ namespace Pass4Win
     using Repository = LibGit2Sharp.Repository;
     using Timer = System.Threading.Timer;
     using System.Threading;
+    using Pass4Win.Logging;
+
     public partial class FrmMain : Form
     {
         // Logging
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log = LogProvider.For<FrmMain>();
 
         /// <summary>
         ///     Global variable for filesystem interface
@@ -65,26 +66,26 @@ namespace Pass4Win
         /// </summary>
         public FrmMain(FileSystemInterface fileSystemInterface, KeySelect keySelect, ConfigHandling config)
         {
-            log.Debug("Init variables");
+            log.Debug(() => "Init variables");
             fsi = fileSystemInterface;
             _keySelect = keySelect;
             _config = config;
             InitializeComponent();
             toolStripStatusLabel1.Text = "";
 
-            log.Debug("init Bugsnag");
-            var bugsnag = new BaseClient("23814316a6ecfe8ff344b6a467f07171");
+            log.Debug(() => "init Bugsnag");
+            var bugsnag = new BaseClient("eabc4288b86be52f98276a8aa150fae8");
 
             this.enableTray = false;
             // Getting actual version
-            log.Debug("Getting program version");
+            log.Debug(() => "Getting program version");
             var assembly = Assembly.GetExecutingAssembly();
             var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             var version = fvi.FileVersion;
             _config["version"] = version.Remove(5);
             Text = @"Pass4Win " + Strings.Version + @" " + _config["version"];
             // check config input
-            log.Debug("Checking config validity");
+            log.Debug(() => "Checking config validity");
             try
             {
                 bool ChkBool = Directory.Exists(_config["PassDirectory"]);
@@ -101,24 +102,24 @@ namespace Pass4Win
             catch
             {
                 // no matter if it's a first run or a corrupt entry, let them fix it.
-                log.Debug("Config corrupt or first run");
+                log.Debug(() => "Config corrupt or first run");
                 _config["FirstRun"] = true;
                 Program.Scope.Resolve<FrmConfig>().ShowDialog();
             }
 
             // checking for update in the background
-            log.Debug("Checking online for latest release");
+            log.Debug(() => "Checking online for latest release");
             LatestPass4WinRelease();
 
             // making new git object
             if (_config["ExternalGit"] && !Program.NoGit)
             {
-                log.Debug("Using an external git executable");
+                log.Debug(() => "Using an external git executable");
                 GitRepo = new GitHandling(_config["PassDirectory"], _config["GitRemote"], _config["ExternalGitLocation"]);
             }
             else if (!Program.NoGit)
             {
-                log.Debug("Using the internal git executable");
+                log.Debug(() => "Using the internal git executable");
                 GitRepo = new GitHandling(_config["PassDirectory"], _config["GitRemote"]);
             }
 
@@ -129,7 +130,7 @@ namespace Pass4Win
                 {
                     if (GitRepo.ConnectToRepo() || (_config["ExternalGit"]))
                     {
-                        log.Debug("Remote Git is valid and active");
+                        log.Debug(() => "Remote Git is valid and active");
                         this.gitRepoOffline = false;
                         toolStripOffline.Visible = false;
                         if (!GitRepo.Fetch(_config["GitUser"], DecryptConfig(_config["GitPass"], "pass4win")))
@@ -141,7 +142,7 @@ namespace Pass4Win
                     // checking if we can clone, otherwise make a new one
                     else if (!GitRepo.GitClone(_config["GitUser"], DecryptConfig(_config["GitPass"], "pass4win")))
                     {
-                        log.Debug("Making a new git repo");
+                        log.Debug(() => "Making a new git repo");
                         Repository.Init(_config["PassDirectory"], false);
                         GitRepo.ConnectToRepo();
                         toolStripOffline.Visible = true;
@@ -149,7 +150,7 @@ namespace Pass4Win
                     // no connection, no repo. So make a new one
                     else if (!GitHandling.IsValid(_config["PassDirectory"]))
                     {
-                        log.Debug("Making a new git repo");
+                        log.Debug(() => "Making a new git repo");
                         Repository.Init(_config["PassDirectory"], false);
                         GitRepo.ConnectToRepo();
                         toolStripOffline.Visible = true;
@@ -163,7 +164,7 @@ namespace Pass4Win
             // Check if we need to init the directory
             if (!File.Exists(gpgfile) || (new FileInfo(gpgfile).Length == 0))
             {
-                log.Debug("Creating .gpg-id");
+                log.Debug(() => "Creating .gpg-id");
                 // ReSharper disable once AssignNullToNotNullAttribute
                 Directory.CreateDirectory(Path.GetDirectoryName(gpgfile));
                 if (_keySelect.ShowDialog() == DialogResult.OK)
@@ -298,7 +299,7 @@ namespace Pass4Win
                         gpgRec.Add(line.TrimEnd(' '));
                     }
                 }
-                log.Debug("Matching GPG Keys");
+                log.Debug(() => "Matching GPG Keys");
                 // match keyid
                 var recipients = new List<KeyId>();
                 foreach (var line in gpgRec)
@@ -337,7 +338,7 @@ namespace Pass4Win
                 {
                     w.Write(txtPassDetail.Text);
                 }
-                log.Debug("Begin encryption of: " + dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem);
+                log.Debug(() => "Begin encryption of: " + dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem);
                 var encrypt = new GpgEncrypt(tmpFile, tmpFile2, false, false, null, recipients, CipherAlgorithm.None);
                 var encResult = encrypt.Execute();
                 this.EncryptCallback(encResult, tmpFile, tmpFile2, dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem + ".gpg");
@@ -351,7 +352,7 @@ namespace Pass4Win
         /// <param name="clear"></param>
         private void DecryptPass(string path, bool clear = true)
         {
-            log.Debug("Start decryption of: " + path);
+            log.Debug(() => "Start decryption of: " + path);
             var f = new FileInfo(path);
             if (f.Exists && f.Length > 0)
             {
@@ -416,7 +417,7 @@ namespace Pass4Win
                             MessageBoxIcon.Error);
                     }
                 }
-                log.Debug("Encryption finished");
+                log.Debug(() => "Encryption finished");
             }
         }
 
@@ -454,7 +455,7 @@ namespace Pass4Win
                         statusTxt.Text = Strings.Statusbar_countdown + @" ";
                         //Create the timer
                         clipboardTimer = new Timer(ClearClipboard, null, 0, 1000);
-                        log.Debug("Decryption finished");
+                        log.Debug(() => "Decryption finished");
                     }
                 }
             }

@@ -36,6 +36,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.2.1.0")]
 [assembly: NeutralResourcesLanguage("en")]
 
-// Log4net
-[assembly: log4net.Config.XmlConfigurator(Watch = true)]
+
 
