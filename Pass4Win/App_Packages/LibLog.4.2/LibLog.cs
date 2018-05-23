@@ -870,14 +870,14 @@ namespace Pass4Win.Logging.LogProviders
 
             static NLogLogger()
             {
-                try
+                var logEventLevelType = Type.GetType("NLog.LogLevel, NLog");
+                if (logEventLevelType == null)
                 {
-                    var logEventLevelType = Type.GetType("NLog.LogLevel, NLog");
-                    if (logEventLevelType == null)
-                    {
-                        throw new InvalidOperationException("Type NLog.LogLevel was not found.");
-                    }
-
+                    System.Console.Error.WriteLine("[Pass4Win] Error: Type NLog.LogLevel was not found.");
+                    // throw new InvalidOperationException("Type NLog.LogLevel was not found.");
+                }
+                else
+                { 
                     var levelFields = logEventLevelType.GetFieldsPortable().ToList();
                     _levelTrace = levelFields.First(x => x.Name == "Trace").GetValue(null);
                     _levelDebug = levelFields.First(x => x.Name == "Debug").GetValue(null);
@@ -889,23 +889,26 @@ namespace Pass4Win.Logging.LogProviders
                     var logEventInfoType = Type.GetType("NLog.LogEventInfo, NLog");
                     if (logEventInfoType == null)
                     {
-                        throw new InvalidOperationException("Type NLog.LogEventInfo was not found.");
+                        System.Console.Error.WriteLine("[Pass4Win] Error: Type NLog.LogEventInfo was not found.");
+                        // throw new InvalidOperationException("Type NLog.LogEventInfo was not found.");
                     }
-                    MethodInfo createLogEventInfoMethodInfo = logEventInfoType.GetMethodPortable("Create",
-                        logEventLevelType, typeof(string), typeof(Exception), typeof(IFormatProvider), typeof(string), typeof(object[]));
-                    ParameterExpression loggerNameParam = Expression.Parameter(typeof(string));
-                    ParameterExpression levelParam = Expression.Parameter(typeof(object));
-                    ParameterExpression messageParam = Expression.Parameter(typeof(string));
-                    ParameterExpression exceptionParam = Expression.Parameter(typeof(Exception));
-                    UnaryExpression levelCast = Expression.Convert(levelParam, logEventLevelType);
-                    MethodCallExpression createLogEventInfoMethodCall = Expression.Call(null,
-                        createLogEventInfoMethodInfo,
-                        levelCast, loggerNameParam, exceptionParam,
-                        Expression.Constant(null, typeof(IFormatProvider)), messageParam, Expression.Constant(null, typeof(object[])));
-                    _logEventInfoFact = Expression.Lambda<Func<string, object, string, Exception, object>>(createLogEventInfoMethodCall,
-                        loggerNameParam, levelParam, messageParam, exceptionParam).Compile();
+                    else
+                    {
+                        MethodInfo createLogEventInfoMethodInfo = logEventInfoType.GetMethodPortable("Create",
+                            logEventLevelType, typeof(string), typeof(Exception), typeof(IFormatProvider), typeof(string), typeof(object[]));
+                        ParameterExpression loggerNameParam = Expression.Parameter(typeof(string));
+                        ParameterExpression levelParam = Expression.Parameter(typeof(object));
+                        ParameterExpression messageParam = Expression.Parameter(typeof(string));
+                        ParameterExpression exceptionParam = Expression.Parameter(typeof(Exception));
+                        UnaryExpression levelCast = Expression.Convert(levelParam, logEventLevelType);
+                        MethodCallExpression createLogEventInfoMethodCall = Expression.Call(null,
+                            createLogEventInfoMethodInfo,
+                            levelCast, loggerNameParam, exceptionParam,
+                            Expression.Constant(null, typeof(IFormatProvider)), messageParam, Expression.Constant(null, typeof(object[])));
+                        _logEventInfoFact = Expression.Lambda<Func<string, object, string, Exception, object>>(createLogEventInfoMethodCall,
+                            loggerNameParam, levelParam, messageParam, exceptionParam).Compile();
+                    }
                 }
-                catch { }
             }
 
             internal NLogLogger(dynamic logger)
