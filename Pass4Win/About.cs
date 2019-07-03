@@ -22,7 +22,7 @@ namespace Pass4Win
         {
             _config = config;
             InitializeComponent();
-            
+
             // Getting actual version
             txtPassVersion.Text += @" " + _config["version"];
         }

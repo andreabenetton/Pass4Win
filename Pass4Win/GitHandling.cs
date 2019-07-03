@@ -7,12 +7,12 @@
 // </summary>
 // 
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace Pass4Win
 {
     using System;
     using System.Linq;
     using System.Net.Sockets;
-
     using LibGit2Sharp;
     using System.IO;
     using System.Diagnostics;
@@ -67,7 +67,6 @@ namespace Pass4Win
                 this.host = host;
             else
                 GetHost();
-
         }
 
         /// <summary>
@@ -210,6 +209,7 @@ namespace Pass4Win
                     }
                 }
             }
+
             return false;
         }
 
@@ -220,6 +220,7 @@ namespace Pass4Win
                 log.Debug(() => "Git executable not found!");
                 return ("fatal");
             }
+
             log.Debug(() => "Executing: " + command);
             ProcessStartInfo gitInfo = new ProcessStartInfo();
             string output = string.Empty;
@@ -242,10 +243,10 @@ namespace Pass4Win
             {
                 output = myOutput.ReadToEnd();
             }
+
             using (StreamReader myError = gitProcess.StandardError)
             {
                 error = myError.ReadToEnd();
-
             }
 
             gitProcess.WaitForExit();
@@ -287,7 +288,7 @@ namespace Pass4Win
                         new CloneOptions
                         {
                             CredentialsProvider =
-                                    (url, user, cred) =>
+                                (url, user, cred) =>
                                     new UsernamePasswordCredentials
                                     {
                                         Username = username,
@@ -301,6 +302,7 @@ namespace Pass4Win
                     return false;
                 }
             }
+
             ConnectToRepo();
             return true;
         }
@@ -340,15 +342,15 @@ namespace Pass4Win
                     var fetchOptions = new FetchOptions
                     {
                         CredentialsProvider =
-                                                   (url, user, cred) =>
-                                                   new UsernamePasswordCredentials
-                                                   {
-                                                       Username = gitUser,
-                                                       Password = gitPass
-                                                   }
+                            (url, user, cred) =>
+                                new UsernamePasswordCredentials
+                                {
+                                    Username = gitUser,
+                                    Password = gitPass
+                                }
                     };
                     var mergeOptions = new MergeOptions();
-                    var pullOptions = new PullOptions { FetchOptions = fetchOptions, MergeOptions = mergeOptions };
+                    var pullOptions = new PullOptions {FetchOptions = fetchOptions, MergeOptions = mergeOptions};
                     Commands.Pull(gitRepo, signature, pullOptions);
                 }
                 catch (Exception message)
@@ -357,6 +359,7 @@ namespace Pass4Win
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -383,6 +386,7 @@ namespace Pass4Win
                     {
                         return false;
                     }
+
                     GitOutput = ExecuteGitCommand("commit -m Pass4Win");
                     result = Regex.IsMatch(GitOutput, "\\bfatal\\b", RegexOptions.IgnoreCase);
                     if (result == true)
@@ -400,9 +404,9 @@ namespace Pass4Win
                             Commands.Stage(gitRepo, "*");
 
                             gitRepo.Commit(
-                            "password changes",
-                            new Signature("pass4win", "pass4win", DateTimeOffset.Now),
-                            new Signature("pass4win", "pass4win", DateTimeOffset.Now));
+                                "password changes",
+                                new Signature("pass4win", "pass4win", DateTimeOffset.Now),
+                                new Signature("pass4win", "pass4win", DateTimeOffset.Now));
                         }
                         catch (Exception message)
                         {
@@ -412,6 +416,7 @@ namespace Pass4Win
                     }
                 }
             }
+
             // Commit
             return true;
         }
@@ -442,21 +447,23 @@ namespace Pass4Win
             }
             else
             {
-                var tc = this.gitRepo.Diff.Compare<TreeChanges>(this.gitRepo.Branches["origin/master"].Tip.Tree, this.gitRepo.Head.Tip.Tree);
+                var tc = this.gitRepo.Diff.Compare<TreeChanges>(this.gitRepo.Branches["origin/master"].Tip.Tree,
+                    this.gitRepo.Head.Tip.Tree);
                 if (!tc.Any())
                 {
                     return true;
                 }
+
                 var remote = this.gitRepo.Network.Remotes["origin"];
                 var options = new PushOptions
                 {
                     CredentialsProvider =
-                                          (url, user, cred) =>
-                                          new UsernamePasswordCredentials
-                                          {
-                                              Username = gitUser,
-                                              Password = gitPass
-                                          }
+                        (url, user, cred) =>
+                            new UsernamePasswordCredentials
+                            {
+                                Username = gitUser,
+                                Password = gitPass
+                            }
                 };
                 var pushRefSpec = @"refs/heads/master";
                 try
@@ -506,6 +513,7 @@ namespace Pass4Win
                     return false;
                 }
             }
+
             return true;
         }
 

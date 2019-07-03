@@ -40,8 +40,13 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "Pass4Win.Logging")]
-[assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "Pass4Win.Logging.Logger.#Invoke(Pass4Win.Logging.LogLevel,System.Func`1<System.String>,System.Exception,System.Object[])")]
+[assembly:
+    SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace",
+        Target = "Pass4Win.Logging")]
+[assembly:
+    SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member",
+        Target =
+            "Pass4Win.Logging.Logger.#Invoke(Pass4Win.Logging.LogLevel,System.Func`1<System.String>,System.Exception,System.Object[])")]
 
 // If you copied this file manually, you need to change all "YourRootNameSpace" so not to clash with other libraries
 // that use LibLog
@@ -63,6 +68,7 @@ namespace Pass4Win.Logging
     using System.Diagnostics;
 #if !LIBLOG_PORTABLE
     using System.Runtime.CompilerServices;
+
 #endif
 #endif
 
@@ -71,7 +77,8 @@ namespace Pass4Win.Logging
 #else
     public
 #endif
-    delegate bool Logger(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters);
+        delegate bool Logger(LogLevel logLevel, Func<string> messageFunc, Exception exception = null,
+            params object[] formatParameters);
 
 #if !LIBLOG_PROVIDERS_ONLY
     /// <summary>
@@ -82,7 +89,7 @@ namespace Pass4Win.Logging
 #else
     internal
 #endif
-    interface ILog
+        interface ILog
     {
         /// <summary>
         /// Log a message the specified log level.
@@ -98,7 +105,8 @@ namespace Pass4Win.Logging
         /// 
         /// To check IsEnabled call Log with only LogLevel and check the return value, no event will be written.
         /// </remarks>
-        bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters );
+        bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null,
+            params object[] formatParameters);
     }
 #endif
 
@@ -110,7 +118,7 @@ namespace Pass4Win.Logging
 #else
     public
 #endif
-    enum LogLevel
+        enum LogLevel
     {
         Trace,
         Debug,
@@ -126,7 +134,7 @@ namespace Pass4Win.Logging
 #else
     internal
 #endif
-    static partial class LogExtensions
+        static partial class LogExtensions
     {
         public static bool IsDebugEnabled(this ILog logger)
         {
@@ -194,7 +202,8 @@ namespace Pass4Win.Logging
             }
         }
 
-        public static void DebugException(this ILog logger, string message, Exception exception, params object[] formatParams)
+        public static void DebugException(this ILog logger, string message, Exception exception,
+            params object[] formatParams)
         {
             if (logger.IsDebugEnabled())
             {
@@ -224,7 +233,8 @@ namespace Pass4Win.Logging
             }
         }
 
-        public static void ErrorException(this ILog logger, string message, Exception exception, params object[] formatParams)
+        public static void ErrorException(this ILog logger, string message, Exception exception,
+            params object[] formatParams)
         {
             if (logger.IsErrorEnabled())
             {
@@ -253,7 +263,8 @@ namespace Pass4Win.Logging
             }
         }
 
-        public static void FatalException(this ILog logger, string message, Exception exception, params object[] formatParams)
+        public static void FatalException(this ILog logger, string message, Exception exception,
+            params object[] formatParams)
         {
             if (logger.IsFatalEnabled())
             {
@@ -283,7 +294,8 @@ namespace Pass4Win.Logging
             }
         }
 
-        public static void InfoException(this ILog logger, string message, Exception exception, params object[] formatParams)
+        public static void InfoException(this ILog logger, string message, Exception exception,
+            params object[] formatParams)
         {
             if (logger.IsInfoEnabled())
             {
@@ -313,7 +325,8 @@ namespace Pass4Win.Logging
             }
         }
 
-        public static void TraceException(this ILog logger, string message, Exception exception, params object[] formatParams)
+        public static void TraceException(this ILog logger, string message, Exception exception,
+            params object[] formatParams)
         {
             if (logger.IsTraceEnabled())
             {
@@ -343,7 +356,8 @@ namespace Pass4Win.Logging
             }
         }
 
-        public static void WarnException(this ILog logger, string message, Exception exception, params object[] formatParams)
+        public static void WarnException(this ILog logger, string message, Exception exception,
+            params object[] formatParams)
         {
             if (logger.IsWarnEnabled())
             {
@@ -386,7 +400,7 @@ namespace Pass4Win.Logging
 #else
     public
 #endif
-    interface ILogProvider
+        interface ILogProvider
     {
         /// <summary>
         /// Gets the specified named logger.
@@ -419,11 +433,12 @@ namespace Pass4Win.Logging
 #else
     public
 #endif
-    static class LogProvider
+        static class LogProvider
     {
 #if !LIBLOG_PROVIDERS_ONLY
         private const string NullLogProvider = "Current Log Provider is not set. Call SetCurrentLogProvider " +
                                                "with a non-null value first.";
+
         private static dynamic s_currentLogProvider;
         private static Action<ILogProvider> s_onCurrentLogProviderSet;
 
@@ -469,10 +484,7 @@ namespace Pass4Win.Logging
 
         internal static ILogProvider CurrentLogProvider
         {
-            get
-            {
-                return s_currentLogProvider;
-            }
+            get { return s_currentLogProvider; }
         }
 
         /// <summary>
@@ -485,7 +497,7 @@ namespace Pass4Win.Logging
 #else
         internal
 #endif
-        static ILog For<T>()
+            static ILog For<T>()
         {
             return GetLogger(typeof(T));
         }
@@ -501,7 +513,7 @@ namespace Pass4Win.Logging
 #else
         internal
 #endif
-        static ILog GetCurrentClassLogger()
+            static ILog GetCurrentClassLogger()
         {
             var stackFrame = new StackFrame(1, false);
             return GetLogger(stackFrame.GetMethod().DeclaringType);
@@ -519,7 +531,7 @@ namespace Pass4Win.Logging
 #else
         internal
 #endif
-        static ILog GetLogger(Type type, string fallbackTypeName = "System.Object")
+            static ILog GetLogger(Type type, string fallbackTypeName = "System.Object")
         {
             // If the type passed in is null then fallback to the type name specified
             return GetLogger(type != null ? type.FullName : fallbackTypeName);
@@ -535,12 +547,12 @@ namespace Pass4Win.Logging
 #else
         internal
 #endif
-        static ILog GetLogger(string name)
+            static ILog GetLogger(string name)
         {
             ILogProvider logProvider = CurrentLogProvider ?? ResolveLogProvider();
             return logProvider == null
                 ? NoOpLogger.Instance
-                : (ILog)new LoggerExecutionWrapper(logProvider.GetLogger(name), () => IsDisabled);
+                : (ILog) new LoggerExecutionWrapper(logProvider.GetLogger(name), () => IsDisabled);
         }
 
         /// <summary>
@@ -548,13 +560,14 @@ namespace Pass4Win.Logging
         /// </summary>
         /// <param name="message">A message.</param>
         /// <returns>An <see cref="IDisposable"/> that closes context when disposed.</returns>
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SetCurrentLogProvider")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId =
+            "SetCurrentLogProvider")]
 #if LIBLOG_PUBLIC
         public
 #else
         internal
 #endif
-        static IDisposable OpenNestedContext(string message)
+            static IDisposable OpenNestedContext(string message)
         {
             ILogProvider logProvider = CurrentLogProvider ?? ResolveLogProvider();
 
@@ -569,13 +582,14 @@ namespace Pass4Win.Logging
         /// <param name="key">A key.</param>
         /// <param name="value">A value.</param>
         /// <returns>An <see cref="IDisposable"/> that closes context when disposed.</returns>
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "SetCurrentLogProvider")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId =
+            "SetCurrentLogProvider")]
 #if LIBLOG_PUBLIC
         public
 #else
         internal
 #endif
-        static IDisposable OpenMappedContext(string key, string value)
+            static IDisposable OpenMappedContext(string key, string value)
         {
             ILogProvider logProvider = CurrentLogProvider ?? ResolveLogProvider();
 
@@ -588,31 +602,36 @@ namespace Pass4Win.Logging
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
-    internal
+        internal
 #endif
-    delegate bool IsLoggerAvailable();
+            delegate bool IsLoggerAvailable();
 
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
-    internal
+        internal
 #endif
-    delegate ILogProvider CreateLogProvider();
+            delegate ILogProvider CreateLogProvider();
 
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
-    internal
+        internal
 #endif
-    static readonly List<Tuple<IsLoggerAvailable, CreateLogProvider>> LogProviderResolvers =
-            new List<Tuple<IsLoggerAvailable, CreateLogProvider>>
-        {
-            new Tuple<IsLoggerAvailable, CreateLogProvider>(SerilogLogProvider.IsLoggerAvailable, () => new SerilogLogProvider()),
-            new Tuple<IsLoggerAvailable, CreateLogProvider>(NLogLogProvider.IsLoggerAvailable, () => new NLogLogProvider()),
-            new Tuple<IsLoggerAvailable, CreateLogProvider>(Log4NetLogProvider.IsLoggerAvailable, () => new Log4NetLogProvider()),
-            new Tuple<IsLoggerAvailable, CreateLogProvider>(EntLibLogProvider.IsLoggerAvailable, () => new EntLibLogProvider()),
-            new Tuple<IsLoggerAvailable, CreateLogProvider>(LoupeLogProvider.IsLoggerAvailable, () => new LoupeLogProvider()),
-        };
+            static readonly List<Tuple<IsLoggerAvailable, CreateLogProvider>> LogProviderResolvers =
+                new List<Tuple<IsLoggerAvailable, CreateLogProvider>>
+                {
+                    new Tuple<IsLoggerAvailable, CreateLogProvider>(SerilogLogProvider.IsLoggerAvailable,
+                        () => new SerilogLogProvider()),
+                    new Tuple<IsLoggerAvailable, CreateLogProvider>(NLogLogProvider.IsLoggerAvailable,
+                        () => new NLogLogProvider()),
+                    new Tuple<IsLoggerAvailable, CreateLogProvider>(Log4NetLogProvider.IsLoggerAvailable,
+                        () => new Log4NetLogProvider()),
+                    new Tuple<IsLoggerAvailable, CreateLogProvider>(EntLibLogProvider.IsLoggerAvailable,
+                        () => new EntLibLogProvider()),
+                    new Tuple<IsLoggerAvailable, CreateLogProvider>(LoupeLogProvider.IsLoggerAvailable,
+                        () => new LoupeLogProvider()),
+                };
 
 #if !LIBLOG_PROVIDERS_ONLY
         private static void RaiseOnCurrentLogProviderSet()
@@ -624,7 +643,8 @@ namespace Pass4Win.Logging
         }
 #endif
 
-        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String,System.Object,System.Object)")]
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId =
+            "System.Console.WriteLine(System.String,System.Object,System.Object)")]
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         internal static ILogProvider ResolveLogProvider()
         {
@@ -649,6 +669,7 @@ namespace Pass4Win.Logging
                     typeof(LogProvider).GetAssemblyPortable().FullName,
                     ex);
             }
+
             return null;
         }
 
@@ -657,7 +678,8 @@ namespace Pass4Win.Logging
         {
             internal static readonly NoOpLogger Instance = new NoOpLogger();
 
-            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
+            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception,
+                params object[] formatParameters)
             {
                 return false;
             }
@@ -684,12 +706,14 @@ namespace Pass4Win.Logging
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters)
+        public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null,
+            params object[] formatParameters)
         {
             if (_getIsDisabled())
             {
                 return false;
             }
+
             if (messageFunc == null)
             {
                 return _logger(logLevel, null);
@@ -705,6 +729,7 @@ namespace Pass4Win.Logging
                 {
                     Log(LogLevel.Error, () => FailedToGenerateLogMessage, ex);
                 }
+
                 return null;
             };
             return _logger(logLevel, wrappedMessageFunc, exception, formatParameters);
@@ -737,6 +762,7 @@ namespace Pass4Win.Logging.LogProviders
     internal abstract class LogProviderBase : ILogProvider
     {
         protected delegate IDisposable OpenNdc(string message);
+
         protected delegate IDisposable OpenMdc(string key, string value);
 
         private readonly Lazy<OpenNdc> _lazyOpenNdcMethod;
@@ -748,7 +774,7 @@ namespace Pass4Win.Logging.LogProviders
             _lazyOpenNdcMethod
                 = new Lazy<OpenNdc>(GetOpenNdcMethod);
             _lazyOpenMdcMethod
-               = new Lazy<OpenMdc>(GetOpenMdcMethod);
+                = new Lazy<OpenMdc>(GetOpenMdcMethod);
         }
 
         public abstract Logger GetLogger(string name);
@@ -787,6 +813,7 @@ namespace Pass4Win.Logging.LogProviders
             {
                 throw new InvalidOperationException("NLog.LogManager not found");
             }
+
             _getLoggerByNameDelegate = GetGetLoggerMethodCall();
         }
 
@@ -877,7 +904,7 @@ namespace Pass4Win.Logging.LogProviders
                     // throw new InvalidOperationException("Type NLog.LogLevel was not found.");
                 }
                 else
-                { 
+                {
                     var levelFields = logEventLevelType.GetFieldsPortable().ToList();
                     _levelTrace = levelFields.First(x => x.Name == "Trace").GetValue(null);
                     _levelDebug = levelFields.First(x => x.Name == "Debug").GetValue(null);
@@ -895,7 +922,8 @@ namespace Pass4Win.Logging.LogProviders
                     else
                     {
                         MethodInfo createLogEventInfoMethodInfo = logEventInfoType.GetMethodPortable("Create",
-                            logEventLevelType, typeof(string), typeof(Exception), typeof(IFormatProvider), typeof(string), typeof(object[]));
+                            logEventLevelType, typeof(string), typeof(Exception), typeof(IFormatProvider),
+                            typeof(string), typeof(object[]));
                         ParameterExpression loggerNameParam = Expression.Parameter(typeof(string));
                         ParameterExpression levelParam = Expression.Parameter(typeof(object));
                         ParameterExpression messageParam = Expression.Parameter(typeof(string));
@@ -904,8 +932,10 @@ namespace Pass4Win.Logging.LogProviders
                         MethodCallExpression createLogEventInfoMethodCall = Expression.Call(null,
                             createLogEventInfoMethodInfo,
                             levelCast, loggerNameParam, exceptionParam,
-                            Expression.Constant(null, typeof(IFormatProvider)), messageParam, Expression.Constant(null, typeof(object[])));
-                        _logEventInfoFact = Expression.Lambda<Func<string, object, string, Exception, object>>(createLogEventInfoMethodCall,
+                            Expression.Constant(null, typeof(IFormatProvider)), messageParam,
+                            Expression.Constant(null, typeof(object[])));
+                        _logEventInfoFact = Expression.Lambda<Func<string, object, string, Exception, object>>(
+                            createLogEventInfoMethodCall,
                             loggerNameParam, levelParam, messageParam, exceptionParam).Compile();
                     }
                 }
@@ -917,12 +947,14 @@ namespace Pass4Win.Logging.LogProviders
             }
 
             [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
+            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception,
+                params object[] formatParameters)
             {
                 if (messageFunc == null)
                 {
                     return IsLogLevelEnable(logLevel);
                 }
+
                 messageFunc = LogMessageFormatter.SimulateStructuredLogging(messageFunc, formatParameters);
 
                 if (_logEventInfoFact != null)
@@ -954,18 +986,21 @@ namespace Pass4Win.Logging.LogProviders
                         s_callerStackBoundaryType = null;
 #endif
                         if (s_callerStackBoundaryType != null)
-                            _logger.Log(s_callerStackBoundaryType, _logEventInfoFact(_logger.Name, nlogLevel, messageFunc(), exception));
+                            _logger.Log(s_callerStackBoundaryType,
+                                _logEventInfoFact(_logger.Name, nlogLevel, messageFunc(), exception));
                         else
                             _logger.Log(_logEventInfoFact(_logger.Name, nlogLevel, messageFunc(), exception));
                         return true;
                     }
+
                     return false;
                 }
 
-                if(exception != null)
+                if (exception != null)
                 {
                     return LogException(logLevel, messageFunc, exception);
                 }
+
                 switch (logLevel)
                 {
                     case LogLevel.Debug:
@@ -974,6 +1009,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.Debug(messageFunc());
                             return true;
                         }
+
                         break;
                     case LogLevel.Info:
                         if (_logger.IsInfoEnabled)
@@ -981,6 +1017,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.Info(messageFunc());
                             return true;
                         }
+
                         break;
                     case LogLevel.Warn:
                         if (_logger.IsWarnEnabled)
@@ -988,6 +1025,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.Warn(messageFunc());
                             return true;
                         }
+
                         break;
                     case LogLevel.Error:
                         if (_logger.IsErrorEnabled)
@@ -995,6 +1033,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.Error(messageFunc());
                             return true;
                         }
+
                         break;
                     case LogLevel.Fatal:
                         if (_logger.IsFatalEnabled)
@@ -1002,6 +1041,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.Fatal(messageFunc());
                             return true;
                         }
+
                         break;
                     default:
                         if (_logger.IsTraceEnabled)
@@ -1009,8 +1049,10 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.Trace(messageFunc());
                             return true;
                         }
+
                         break;
                 }
+
                 return false;
             }
 
@@ -1022,8 +1064,10 @@ namespace Pass4Win.Logging.LogProviders
                     {
                         return true;
                     }
+
                     currentType = currentType.GetBaseTypePortable();
                 }
+
                 return false;
             }
 
@@ -1038,6 +1082,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.DebugException(messageFunc(), exception);
                             return true;
                         }
+
                         break;
                     case LogLevel.Info:
                         if (_logger.IsInfoEnabled)
@@ -1045,6 +1090,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.InfoException(messageFunc(), exception);
                             return true;
                         }
+
                         break;
                     case LogLevel.Warn:
                         if (_logger.IsWarnEnabled)
@@ -1052,6 +1098,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.WarnException(messageFunc(), exception);
                             return true;
                         }
+
                         break;
                     case LogLevel.Error:
                         if (_logger.IsErrorEnabled)
@@ -1059,6 +1106,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.ErrorException(messageFunc(), exception);
                             return true;
                         }
+
                         break;
                     case LogLevel.Fatal:
                         if (_logger.IsFatalEnabled)
@@ -1066,6 +1114,7 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.FatalException(messageFunc(), exception);
                             return true;
                         }
+
                         break;
                     default:
                         if (_logger.IsTraceEnabled)
@@ -1073,8 +1122,10 @@ namespace Pass4Win.Logging.LogProviders
                             _logger.TraceException(messageFunc(), exception);
                             return true;
                         }
+
                         break;
                 }
+
                 return false;
             }
 
@@ -1132,6 +1183,7 @@ namespace Pass4Win.Logging.LogProviders
             {
                 throw new InvalidOperationException("log4net.LogManager not found");
             }
+
             _getLoggerByNameDelegate = GetGetLoggerMethodCall();
         }
 
@@ -1167,14 +1219,14 @@ namespace Pass4Win.Logging.LogProviders
             MethodCallExpression callPushBody =
                 Expression.Call(
                     Expression.Property(Expression.Property(null, stacksProperty),
-                                        stacksIndexerProperty,
-                                        Expression.Constant("NDC")),
+                        stacksIndexerProperty,
+                        Expression.Constant("NDC")),
                     pushMethod,
                     messageParameter);
 
             OpenNdc result =
                 Expression.Lambda<OpenNdc>(callPushBody, messageParameter)
-                          .Compile();
+                    .Compile();
 
             return result;
         }
@@ -1194,7 +1246,9 @@ namespace Pass4Win.Logging.LogProviders
             MemberExpression propertiesExpression = Expression.Property(null, propertiesProperty);
 
             // (key, value) => LogicalThreadContext.Properties.Item[key] = value;
-            BinaryExpression setProperties = Expression.Assign(Expression.Property(propertiesExpression, propertiesIndexerProperty, keyParam), valueParam);
+            BinaryExpression setProperties =
+                Expression.Assign(Expression.Property(propertiesExpression, propertiesIndexerProperty, keyParam),
+                    valueParam);
 
             // key => LogicalThreadContext.Properties.Remove(key);
             MethodCallExpression removeMethodCall = Expression.Call(propertiesExpression, removeMethod, keyParam);
@@ -1268,28 +1322,32 @@ namespace Pass4Win.Logging.LogProviders
                 {
                     throw new InvalidOperationException("Type log4net.Core.ILogger, was not found.");
                 }
+
                 ParameterExpression instanceParam = Expression.Parameter(typeof(object));
                 UnaryExpression instanceCast = Expression.Convert(instanceParam, loggerType);
                 ParameterExpression levelParam = Expression.Parameter(typeof(object));
                 UnaryExpression levelCast = Expression.Convert(levelParam, logEventLevelType);
-                _isEnabledForDelegate = GetIsEnabledFor(loggerType, logEventLevelType, instanceCast, levelCast, instanceParam, levelParam);
+                _isEnabledForDelegate = GetIsEnabledFor(loggerType, logEventLevelType, instanceCast, levelCast,
+                    instanceParam, levelParam);
 
                 Type loggingEventType = Type.GetType("log4net.Core.LoggingEvent, log4net");
 
-                _createLoggingEvent = GetCreateLoggingEvent(instanceParam, instanceCast, levelParam, levelCast, loggingEventType);
+                _createLoggingEvent =
+                    GetCreateLoggingEvent(instanceParam, instanceCast, levelParam, levelCast, loggingEventType);
 
                 _logDelegate = GetLogDelegate(loggerType, loggingEventType, instanceCast, instanceParam);
 
                 _loggingEventPropertySetter = GetLoggingEventPropertySetter(loggingEventType);
             }
 
-            private static Action<object, object> GetLogDelegate(Type loggerType, Type loggingEventType, UnaryExpression instanceCast,
-                                                 ParameterExpression instanceParam)
+            private static Action<object, object> GetLogDelegate(Type loggerType, Type loggingEventType,
+                UnaryExpression instanceCast,
+                ParameterExpression instanceParam)
             {
                 //Action<object, object, string, Exception> Log =
                 //(logger, callerStackBoundaryDeclaringType, level, message, exception) => { ((ILogger)logger).Log(new LoggingEvent(callerStackBoundaryDeclaringType, logger.Repository, logger.Name, level, message, exception)); }
                 MethodInfo writeExceptionMethodInfo = loggerType.GetMethodPortable("Log",
-                                                                                   loggingEventType);
+                    loggingEventType);
 
                 ParameterExpression loggingEventParameter =
                     Expression.Parameter(typeof(object), "loggingEvent");
@@ -1303,14 +1361,16 @@ namespace Pass4Win.Logging.LogProviders
                     loggingEventCasted);
 
                 var logDelegate = Expression.Lambda<Action<object, object>>(
-                                                writeMethodExp,
-                                                instanceParam,
-                                                loggingEventParameter).Compile();
+                    writeMethodExp,
+                    instanceParam,
+                    loggingEventParameter).Compile();
 
                 return logDelegate;
             }
 
-            private static Func<object, Type, object, string, Exception, object> GetCreateLoggingEvent(ParameterExpression instanceParam, UnaryExpression instanceCast, ParameterExpression levelParam, UnaryExpression levelCast, Type loggingEventType)
+            private static Func<object, Type, object, string, Exception, object> GetCreateLoggingEvent(
+                ParameterExpression instanceParam, UnaryExpression instanceCast, ParameterExpression levelParam,
+                UnaryExpression levelCast, Type loggingEventType)
             {
                 ParameterExpression callerStackBoundaryDeclaringTypeParam = Expression.Parameter(typeof(Type));
                 ParameterExpression messageParam = Expression.Parameter(typeof(string));
@@ -1320,44 +1380,46 @@ namespace Pass4Win.Logging.LogProviders
                 PropertyInfo levelProperty = loggingEventType.GetPropertyPortable("Level");
 
                 ConstructorInfo loggingEventConstructor =
-                    loggingEventType.GetConstructorPortable(typeof(Type), repositoryProperty.PropertyType, typeof(string), levelProperty.PropertyType, typeof(object), typeof(Exception));
+                    loggingEventType.GetConstructorPortable(typeof(Type), repositoryProperty.PropertyType,
+                        typeof(string), levelProperty.PropertyType, typeof(object), typeof(Exception));
 
                 //Func<object, object, string, Exception, object> Log =
                 //(logger, callerStackBoundaryDeclaringType, level, message, exception) => new LoggingEvent(callerStackBoundaryDeclaringType, ((ILogger)logger).Repository, ((ILogger)logger).Name, (Level)level, message, exception); }
                 NewExpression newLoggingEventExpression =
                     Expression.New(loggingEventConstructor,
-                                   callerStackBoundaryDeclaringTypeParam,
-                                   Expression.Property(instanceCast, "Repository"),
-                                   Expression.Property(instanceCast, "Name"),
-                                   levelCast,
-                                   messageParam,
-                                   exceptionParam);
+                        callerStackBoundaryDeclaringTypeParam,
+                        Expression.Property(instanceCast, "Repository"),
+                        Expression.Property(instanceCast, "Name"),
+                        levelCast,
+                        messageParam,
+                        exceptionParam);
 
                 var createLoggingEvent =
                     Expression.Lambda<Func<object, Type, object, string, Exception, object>>(
-                                  newLoggingEventExpression,
-                                  instanceParam,
-                                  callerStackBoundaryDeclaringTypeParam,
-                                  levelParam,
-                                  messageParam,
-                                  exceptionParam)
-                              .Compile();
+                            newLoggingEventExpression,
+                            instanceParam,
+                            callerStackBoundaryDeclaringTypeParam,
+                            levelParam,
+                            messageParam,
+                            exceptionParam)
+                        .Compile();
 
                 return createLoggingEvent;
             }
 
             private static Func<object, object, bool> GetIsEnabledFor(Type loggerType, Type logEventLevelType,
-                                                                      UnaryExpression instanceCast,
-                                                                      UnaryExpression levelCast,
-                                                                      ParameterExpression instanceParam,
-                                                                      ParameterExpression levelParam)
+                UnaryExpression instanceCast,
+                UnaryExpression levelCast,
+                ParameterExpression instanceParam,
+                ParameterExpression levelParam)
             {
                 MethodInfo isEnabledMethodInfo = loggerType.GetMethodPortable("IsEnabledFor", logEventLevelType);
-                MethodCallExpression isEnabledMethodCall = Expression.Call(instanceCast, isEnabledMethodInfo, levelCast);
+                MethodCallExpression isEnabledMethodCall =
+                    Expression.Call(instanceCast, isEnabledMethodInfo, levelCast);
 
                 Func<object, object, bool> result =
                     Expression.Lambda<Func<object, object, bool>>(isEnabledMethodCall, instanceParam, levelParam)
-                              .Compile();
+                        .Compile();
 
                 return result;
             }
@@ -1376,18 +1438,19 @@ namespace Pass4Win.Logging.LogProviders
                     Expression.Assign(
                         Expression.Property(
                             Expression.Property(Expression.Convert(loggingEventParameter, loggingEventType),
-                                                propertiesProperty), item, keyParameter), valueParameter);
+                                propertiesProperty), item, keyParameter), valueParameter);
 
                 Action<object, string, object> result =
                     Expression.Lambda<Action<object, string, object>>
-                              (body, loggingEventParameter, keyParameter,
-                               valueParameter)
-                              .Compile();
+                        (body, loggingEventParameter, keyParameter,
+                            valueParameter)
+                        .Compile();
 
                 return result;
             }
 
-            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
+            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception,
+                params object[] formatParameters)
             {
                 if (messageFunc == null)
                 {
@@ -1405,8 +1468,8 @@ namespace Pass4Win.Logging.LogProviders
 
                 string formattedMessage =
                     LogMessageFormatter.FormatStructuredMessage(message,
-                                                                formatParameters,
-                                                                out patternMatches);
+                        formatParameters,
+                        out patternMatches);
 
                 // determine correct caller - this might change due to jit optimizations with method inlining
                 if (s_callerStackBoundaryType == null)
@@ -1433,7 +1496,8 @@ namespace Pass4Win.Logging.LogProviders
 
                 var translatedLevel = TranslateLevel(logLevel);
 
-                object loggingEvent = _createLoggingEvent(_logger, s_callerStackBoundaryType, translatedLevel, formattedMessage, exception);
+                object loggingEvent = _createLoggingEvent(_logger, s_callerStackBoundaryType, translatedLevel,
+                    formattedMessage, exception);
 
                 PopulateProperties(loggingEvent, patternMatches, formatParameters);
 
@@ -1442,11 +1506,12 @@ namespace Pass4Win.Logging.LogProviders
                 return true;
             }
 
-            private void PopulateProperties(object loggingEvent, IEnumerable<string> patternMatches, object[] formatParameters)
+            private void PopulateProperties(object loggingEvent, IEnumerable<string> patternMatches,
+                object[] formatParameters)
             {
                 IEnumerable<KeyValuePair<string, object>> keyToValue =
                     patternMatches.Zip(formatParameters,
-                                       (key, value) => new KeyValuePair<string, object>(key, value));
+                        (key, value) => new KeyValuePair<string, object>(key, value));
 
                 foreach (KeyValuePair<string, object> keyValuePair in keyToValue)
                 {
@@ -1462,8 +1527,10 @@ namespace Pass4Win.Logging.LogProviders
                     {
                         return true;
                     }
+
                     currentType = currentType.GetBaseTypePortable();
                 }
+
                 return false;
             }
 
@@ -1497,7 +1564,9 @@ namespace Pass4Win.Logging.LogProviders
 
     internal class EntLibLogProvider : LogProviderBase
     {
-        private const string TypeTemplate = "Microsoft.Practices.EnterpriseLibrary.Logging.{0}, Microsoft.Practices.EnterpriseLibrary.Logging";
+        private const string TypeTemplate =
+            "Microsoft.Practices.EnterpriseLibrary.Logging.{0}, Microsoft.Practices.EnterpriseLibrary.Logging";
+
         private static bool s_providerIsAvailableOverride = true;
         private static readonly Type LogEntryType;
         private static readonly Type LoggerType;
@@ -1512,16 +1581,18 @@ namespace Pass4Win.Logging.LogProviders
             LoggerType = Type.GetType(string.Format(CultureInfo.InvariantCulture, TypeTemplate, "Logger"));
             TraceEventTypeType = TraceEventTypeValues.Type;
             if (LogEntryType == null
-                 || TraceEventTypeType == null
-                 || LoggerType == null)
+                || TraceEventTypeType == null
+                || LoggerType == null)
             {
                 return;
             }
+
             WriteLogEntry = GetWriteLogEntry();
             ShouldLogEntry = GetShouldLogEntry();
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EnterpriseLibrary")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId =
+            "EnterpriseLibrary")]
         public EntLibLogProvider()
         {
             if (!IsLoggerAvailable())
@@ -1544,8 +1615,8 @@ namespace Pass4Win.Logging.LogProviders
         internal static bool IsLoggerAvailable()
         {
             return ProviderIsAvailableOverride
-                 && TraceEventTypeType != null
-                 && LogEntryType != null;
+                   && TraceEventTypeType != null
+                   && LogEntryType != null;
         }
 
         private static Action<string, string, int> GetWriteLogEntry()
@@ -1601,12 +1672,12 @@ namespace Pass4Win.Logging.LogProviders
                 Expression.Bind(entryType.GetPropertyPortable("Severity"), severityParameter),
                 Expression.Bind(
                     entryType.GetPropertyPortable("TimeStamp"),
-                    Expression.Property(null, typeof (DateTime).GetPropertyPortable("UtcNow"))),
+                    Expression.Property(null, typeof(DateTime).GetPropertyPortable("UtcNow"))),
                 Expression.Bind(
                     entryType.GetPropertyPortable("Categories"),
                     Expression.ListInit(
-                        Expression.New(typeof (List<string>)),
-                        typeof (List<string>).GetMethodPortable("Add", typeof (string)),
+                        Expression.New(typeof(List<string>)),
+                        typeof(List<string>).GetMethodPortable("Add", typeof(string)),
                         logNameParameter)));
             return memberInit;
         }
@@ -1617,14 +1688,16 @@ namespace Pass4Win.Logging.LogProviders
             private readonly Action<string, string, int> _writeLog;
             private readonly Func<string, int, bool> _shouldLog;
 
-            internal EntLibLogger(string loggerName, Action<string, string, int> writeLog, Func<string, int, bool> shouldLog)
+            internal EntLibLogger(string loggerName, Action<string, string, int> writeLog,
+                Func<string, int, bool> shouldLog)
             {
                 _loggerName = loggerName;
                 _writeLog = writeLog;
                 _shouldLog = shouldLog;
             }
 
-            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
+            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception,
+                params object[] formatParameters)
             {
                 var severity = MapSeverity(logLevel);
                 if (messageFunc == null)
@@ -1638,6 +1711,7 @@ namespace Pass4Win.Logging.LogProviders
                 {
                     return LogException(logLevel, messageFunc, exception);
                 }
+
                 _writeLog(_loggerName, messageFunc(), severity);
                 return true;
             }
@@ -1681,6 +1755,7 @@ namespace Pass4Win.Logging.LogProviders
             {
                 throw new InvalidOperationException("Serilog.Log not found");
             }
+
             _getLoggerByNameDelegate = GetForContextMethodCall();
         }
 
@@ -1712,11 +1787,11 @@ namespace Pass4Win.Logging.LogProviders
 
         private static Func<string, string, IDisposable> GetPushProperty()
         {
-            Type ndcContextType = Type.GetType("Serilog.Context.LogContext, Serilog") ?? 
+            Type ndcContextType = Type.GetType("Serilog.Context.LogContext, Serilog") ??
                                   Type.GetType("Serilog.Context.LogContext, Serilog.FullNetFx");
 
             MethodInfo pushPropertyMethod = ndcContextType.GetMethodPortable(
-                "PushProperty", 
+                "PushProperty",
                 typeof(string),
                 typeof(object),
                 typeof(bool));
@@ -1733,7 +1808,7 @@ namespace Pass4Win.Logging.LogProviders
                     valueParam,
                     destructureObjectParam)
                 .Compile();
-            
+
             return (key, value) => pushProperty(key, value, false);
         }
 
@@ -1745,21 +1820,22 @@ namespace Pass4Win.Logging.LogProviders
         private static Func<string, object> GetForContextMethodCall()
         {
             Type logManagerType = GetLogManagerType();
-            MethodInfo method = logManagerType.GetMethodPortable("ForContext", typeof(string), typeof(object), typeof(bool));
+            MethodInfo method =
+                logManagerType.GetMethodPortable("ForContext", typeof(string), typeof(object), typeof(bool));
             ParameterExpression propertyNameParam = Expression.Parameter(typeof(string), "propertyName");
             ParameterExpression valueParam = Expression.Parameter(typeof(object), "value");
             ParameterExpression destructureObjectsParam = Expression.Parameter(typeof(bool), "destructureObjects");
             MethodCallExpression methodCall = Expression.Call(null, method, new Expression[]
             {
-                propertyNameParam, 
+                propertyNameParam,
                 valueParam,
                 destructureObjectsParam
             });
             var func = Expression.Lambda<Func<string, object, bool, object>>(
-                methodCall,
-                propertyNameParam,
-                valueParam,
-                destructureObjectsParam)
+                    methodCall,
+                    propertyNameParam,
+                    valueParam,
+                    destructureObjectsParam)
                 .Compile();
             return name => func("SourceContext", name, false);
         }
@@ -1780,7 +1856,8 @@ namespace Pass4Win.Logging.LogProviders
             [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
             [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ILogger")]
-            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "LogEventLevel")]
+            [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId =
+                "LogEventLevel")]
             [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Serilog")]
             static SerilogLogger()
             {
@@ -1789,6 +1866,7 @@ namespace Pass4Win.Logging.LogProviders
                 {
                     throw new InvalidOperationException("Type Serilog.Events.LogEventLevel was not found.");
                 }
+
                 DebugLevel = Enum.Parse(logEventLevelType, "Debug", false);
                 ErrorLevel = Enum.Parse(logEventLevelType, "Error", false);
                 FatalLevel = Enum.Parse(logEventLevelType, "Fatal", false);
@@ -1802,17 +1880,21 @@ namespace Pass4Win.Logging.LogProviders
                 {
                     throw new InvalidOperationException("Type Serilog.ILogger was not found.");
                 }
+
                 MethodInfo isEnabledMethodInfo = loggerType.GetMethodPortable("IsEnabled", logEventLevelType);
                 ParameterExpression instanceParam = Expression.Parameter(typeof(object));
                 UnaryExpression instanceCast = Expression.Convert(instanceParam, loggerType);
                 ParameterExpression levelParam = Expression.Parameter(typeof(object));
                 UnaryExpression levelCast = Expression.Convert(levelParam, logEventLevelType);
-                MethodCallExpression isEnabledMethodCall = Expression.Call(instanceCast, isEnabledMethodInfo, levelCast);
-                IsEnabled = Expression.Lambda<Func<object, object, bool>>(isEnabledMethodCall, instanceParam, levelParam).Compile();
+                MethodCallExpression isEnabledMethodCall =
+                    Expression.Call(instanceCast, isEnabledMethodInfo, levelCast);
+                IsEnabled = Expression
+                    .Lambda<Func<object, object, bool>>(isEnabledMethodCall, instanceParam, levelParam).Compile();
 
                 // Action<object, object, string> Write =
                 // (logger, level, message, params) => { ((SeriLog.ILoggerILogger)logger).Write(level, message, params); }
-                MethodInfo writeMethodInfo = loggerType.GetMethodPortable("Write", logEventLevelType, typeof(string), typeof(object[]));
+                MethodInfo writeMethodInfo =
+                    loggerType.GetMethodPortable("Write", logEventLevelType, typeof(string), typeof(object[]));
                 ParameterExpression messageParam = Expression.Parameter(typeof(string));
                 ParameterExpression propertyValuesParam = Expression.Parameter(typeof(object[]));
                 MethodCallExpression writeMethodExp = Expression.Call(
@@ -1822,7 +1904,7 @@ namespace Pass4Win.Logging.LogProviders
                     messageParam,
                     propertyValuesParam);
                 var expression = Expression.Lambda<Action<object, object, string, object[]>>(
-                    writeMethodExp, 
+                    writeMethodExp,
                     instanceParam,
                     levelParam,
                     messageParam,
@@ -1831,7 +1913,7 @@ namespace Pass4Win.Logging.LogProviders
 
                 // Action<object, object, string, Exception> WriteException =
                 // (logger, level, exception, message) => { ((ILogger)logger).Write(level, exception, message, new object[]); }
-                MethodInfo writeExceptionMethodInfo = loggerType.GetMethodPortable("Write", 
+                MethodInfo writeExceptionMethodInfo = loggerType.GetMethodPortable("Write",
                     logEventLevelType,
                     typeof(Exception),
                     typeof(string),
@@ -1845,7 +1927,7 @@ namespace Pass4Win.Logging.LogProviders
                     messageParam,
                     propertyValuesParam);
                 WriteException = Expression.Lambda<Action<object, object, Exception, string, object[]>>(
-                    writeMethodExp, 
+                    writeMethodExp,
                     instanceParam,
                     levelParam,
                     exceptionParam,
@@ -1858,7 +1940,8 @@ namespace Pass4Win.Logging.LogProviders
                 _logger = logger;
             }
 
-            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
+            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception,
+                params object[] formatParameters)
             {
                 var translatedLevel = TranslateLevel(logLevel);
                 if (messageFunc == null)
@@ -1888,7 +1971,8 @@ namespace Pass4Win.Logging.LogProviders
                 Write(_logger, translatedLevel, messageFunc(), formatParameters);
             }
 
-            private void LogException(object logLevel, Func<string> messageFunc, Exception exception, object[] formatParams)
+            private void LogException(object logLevel, Func<string> messageFunc, Exception exception,
+                object[] formatParams)
             {
                 WriteException(_logger, logLevel, exception, messageFunc(), formatParams);
             }
@@ -1931,7 +2015,7 @@ namespace Pass4Win.Logging.LogProviders
             string caption,
             string description,
             params object[] args
-            );
+        );
 
         private static bool s_providerIsAvailableOverride = true;
         private readonly WriteDelegate _logWriteDelegate;
@@ -1981,10 +2065,10 @@ namespace Pass4Win.Logging.LogProviders
 
             MethodInfo method = logManagerType.GetMethodPortable(
                 "Write",
-                logMessageSeverityType, typeof(string), typeof(int), typeof(Exception), typeof(bool), 
+                logMessageSeverityType, typeof(string), typeof(int), typeof(Exception), typeof(bool),
                 logWriteModeType, typeof(string), typeof(string), typeof(string), typeof(string), typeof(object[]));
 
-            var callDelegate = (WriteDelegate)method.CreateDelegate(typeof(WriteDelegate));
+            var callDelegate = (WriteDelegate) method.CreateDelegate(typeof(WriteDelegate));
             return callDelegate;
         }
 
@@ -2007,7 +2091,8 @@ namespace Pass4Win.Logging.LogProviders
 #endif
             }
 
-            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception, params object[] formatParameters)
+            public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception,
+                params object[] formatParameters)
             {
                 if (messageFunc == null)
                 {
@@ -2058,18 +2143,20 @@ namespace Pass4Win.Logging.LogProviders
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static TraceEventTypeValues()
         {
-            var assembly = typeof(Uri).GetAssemblyPortable(); // This is to get to the System.dll assembly in a PCL compatible way.
+            var assembly =
+                typeof(Uri).GetAssemblyPortable(); // This is to get to the System.dll assembly in a PCL compatible way.
             if (assembly == null)
             {
                 return;
             }
+
             Type = assembly.GetType("System.Diagnostics.TraceEventType");
             if (Type == null) return;
-            Verbose = (int)Enum.Parse(Type, "Verbose", false);
-            Information = (int)Enum.Parse(Type, "Information", false);
-            Warning = (int)Enum.Parse(Type, "Warning", false);
-            Error = (int)Enum.Parse(Type, "Error", false);
-            Critical = (int)Enum.Parse(Type, "Critical", false);
+            Verbose = (int) Enum.Parse(Type, "Verbose", false);
+            Information = (int) Enum.Parse(Type, "Information", false);
+            Warning = (int) Enum.Parse(Type, "Warning", false);
+            Error = (int) Enum.Parse(Type, "Error", false);
+            Critical = (int) Enum.Parse(Type, "Critical", false);
         }
     }
 
@@ -2079,7 +2166,8 @@ namespace Pass4Win.Logging.LogProviders
 #if LIBLOG_PORTABLE
         private static readonly Regex Pattern = new Regex(@"(?<!{){@?(?<arg>[^\d{][^ }]*)}");
 #else
-        private static readonly Regex Pattern = new Regex(@"(?<!{){@?(?<arg>[^ :{}]+)(?<format>:[^}]+)?}", RegexOptions.Compiled);
+        private static readonly Regex Pattern = new Regex(@"(?<!{){@?(?<arg>[^ :{}]+)(?<format>:[^}]+)?}",
+            RegexOptions.Compiled);
 #endif
 
         /// <summary>
@@ -2114,10 +2202,12 @@ namespace Pass4Win.Logging.LogProviders
             {
                 return text;
             }
+
             return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
 
-        public static string FormatStructuredMessage(string targetMessage, object[] formatParameters, out IEnumerable<string> patternMatches)
+        public static string FormatStructuredMessage(string targetMessage, object[] formatParameters,
+            out IEnumerable<string> patternMatches)
         {
             if (formatParameters.Length == 0)
             {
@@ -2146,13 +2236,15 @@ namespace Pass4Win.Logging.LogProviders
                         "{" + argumentIndex + match.Groups["format"].Value + "}");
                 }
             }
+
             try
             {
                 return string.Format(CultureInfo.InvariantCulture, targetMessage, formatParameters);
             }
             catch (FormatException ex)
             {
-                throw new FormatException("The input string '" + targetMessage + "' could not be formatted using string.Format", ex);
+                throw new FormatException(
+                    "The input string '" + targetMessage + "' could not be formatted using string.Format", ex);
             }
         }
     }
@@ -2257,7 +2349,7 @@ namespace Pass4Win.Logging.LogProviders
 
         public void Dispose()
         {
-            if(_onDispose != null)
+            if (_onDispose != null)
             {
                 _onDispose();
             }

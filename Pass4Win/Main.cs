@@ -40,6 +40,7 @@ namespace Pass4Win
         ///     Global variable for filesystem interface
         /// </summary>
         private readonly FileSystemInterface fsi;
+
         private readonly KeySelect _keySelect;
         private readonly ConfigHandling _config;
 
@@ -108,7 +109,8 @@ namespace Pass4Win
             if (_config["ExternalGit"] && !Program.NoGit)
             {
                 log.Debug(() => "Using an external git executable");
-                GitRepo = new GitHandling(_config["PassDirectory"], _config["GitRemote"], _config["ExternalGitLocation"]);
+                GitRepo = new GitHandling(_config["PassDirectory"], _config["GitRemote"],
+                    _config["ExternalGitLocation"]);
             }
             else if (!Program.NoGit)
             {
@@ -187,6 +189,7 @@ namespace Pass4Win
                     Environment.Exit(1);
                 }
             }
+
             // Setting the exe location for the GPG Dll
             GpgInterface.ExePath = _config["GPGEXE"];
 
@@ -207,19 +210,14 @@ namespace Pass4Win
                 Show();
                 WindowState = FormWindowState.Normal;
             }
+
             base.WndProc(ref m);
         }
 
         public sealed override string Text
         {
-            get
-            {
-                return base.Text;
-            }
-            set
-            {
-                base.Text = value;
-            }
+            get { return base.Text; }
+            set { base.Text = value; }
         }
 
         private void CopyToolStripMenuItemClick(object sender, EventArgs e)
@@ -253,6 +251,7 @@ namespace Pass4Win
                     gpgfile = _config["PassDirectory"];
                     gpgfile += "\\.gpg-id";
                 }
+
                 var gpgRec = new List<string>();
                 using (var r = new StreamReader(gpgfile))
                 {
@@ -262,6 +261,7 @@ namespace Pass4Win
                         gpgRec.Add(line.TrimEnd(' '));
                     }
                 }
+
                 log.Debug(() => "Matching GPG Keys");
                 // match keyid
                 var recipients = new List<KeyId>();
@@ -282,6 +282,7 @@ namespace Pass4Win
                             }
                         }
                     }
+
                     if (!gotTheKey)
                     {
                         MessageBox.Show(
@@ -301,10 +302,13 @@ namespace Pass4Win
                 {
                     w.Write(txtPassDetail.Text);
                 }
-                log.Debug(() => "Begin encryption of: " + dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem);
+
+                log.Debug(() =>
+                    "Begin encryption of: " + dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem);
                 var encrypt = new GpgEncrypt(tmpFile, tmpFile2, false, false, null, recipients, CipherAlgorithm.None);
                 var encResult = encrypt.Execute();
-                this.EncryptCallback(encResult, tmpFile, tmpFile2, dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem + ".gpg");
+                this.EncryptCallback(encResult, tmpFile, tmpFile2,
+                    dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem + ".gpg");
             }
         }
 
@@ -380,6 +384,7 @@ namespace Pass4Win
                             MessageBoxIcon.Error);
                     }
                 }
+
                 log.Debug(() => "Encryption finished");
             }
         }
@@ -429,13 +434,13 @@ namespace Pass4Win
             }
         }
 
-    /// <summary>
-    ///     Encrypt the git password
-    /// </summary>
-    /// <param name="password"></param>
-    /// <param name="salt"></param>
-    /// <returns></returns>
-    public static string EncryptConfig(string password, string salt)
+        /// <summary>
+        ///     Encrypt the git password
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="salt"></param>
+        /// <returns></returns>
+        public static string EncryptConfig(string password, string salt)
         {
             var passwordBytes = Encoding.Unicode.GetBytes(password);
             var saltBytes = Encoding.Unicode.GetBytes(salt);
@@ -486,14 +491,14 @@ namespace Pass4Win
         private void RenameToolStripMenuItemClick(object sender, EventArgs e)
         {
             var newFileDialog = new SaveFileDialog
-                                    {
-                                        AddExtension = true,
-                                        AutoUpgradeEnabled = true,
-                                        CreatePrompt = false,
-                                        DefaultExt = "gpg",
-                                        InitialDirectory = _config["PassDirectory"],
-                                        Title = Strings.FrmMain_RenameToolStripMenuItemClick_Rename
-                                    };
+            {
+                AddExtension = true,
+                AutoUpgradeEnabled = true,
+                CreatePrompt = false,
+                DefaultExt = "gpg",
+                InitialDirectory = _config["PassDirectory"],
+                Title = Strings.FrmMain_RenameToolStripMenuItemClick_Rename
+            };
             if (newFileDialog.ShowDialog() == DialogResult.Cancel)
             {
                 return;
@@ -541,6 +546,7 @@ namespace Pass4Win
                         MessageBoxIcon.Error);
                 }
             }
+
             this.CreateNodes();
         }
 
@@ -654,11 +660,13 @@ namespace Pass4Win
                     foundNode = nodes[i];
                     break;
                 }
+
                 if (nodes[i].Nodes.Count > 0)
                 {
                     foundNode = FindTreeNodeText(nodes[i].Nodes, findText);
                 }
             }
+
             return foundNode;
         }
 
@@ -748,7 +756,8 @@ namespace Pass4Win
                     {
                         // nope not online
                         this.gitRepoOffline = true;
-                        MessageBox.Show(Strings.Error_connection, Strings.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Strings.Error_connection, Strings.Error, MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
                     else
                     {
@@ -763,7 +772,6 @@ namespace Pass4Win
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                         }
-
                     }
                 }
                 else
@@ -790,6 +798,7 @@ namespace Pass4Win
                 listFileView.Items.Add("Empty directory");
                 return;
             }
+
             foreach (var row in myList)
             {
                 listFileView.Items.Add(row);
@@ -837,14 +846,14 @@ namespace Pass4Win
         private void ToolStripbtnAddClick(object sender, EventArgs e)
         {
             var newFileDialog = new SaveFileDialog
-                                    {
-                                        AddExtension = true,
-                                        AutoUpgradeEnabled = true,
-                                        CreatePrompt = false,
-                                        DefaultExt = "gpg",
-                                        InitialDirectory = _config["PassDirectory"],
-                                        Title = Strings.Info_add_dialog
-                                    };
+            {
+                AddExtension = true,
+                AutoUpgradeEnabled = true,
+                CreatePrompt = false,
+                DefaultExt = "gpg",
+                InitialDirectory = _config["PassDirectory"],
+                Title = Strings.Info_add_dialog
+            };
             if (newFileDialog.ShowDialog() == DialogResult.Cancel)
             {
                 return;
@@ -935,7 +944,8 @@ namespace Pass4Win
 
                 // setting up GUI
                 listFileView.SelectedIndex = 0;
-                dirTreeView.SelectedNode = FindTreeNodeText(dirTreeView.Nodes, Path.GetFileName(_config["PassDirectory"]));
+                dirTreeView.SelectedNode =
+                    FindTreeNodeText(dirTreeView.Nodes, Path.GetFileName(_config["PassDirectory"]));
                 this.DecryptPass(dirTreeView.SelectedNode.Tag + "\\" + listFileView.SelectedItem + ".gpg");
                 btnMakeVisible.Visible = true;
                 txtPassDetail.Visible = false;

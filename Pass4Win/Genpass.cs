@@ -13,7 +13,8 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Genpass"/> class.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1126:PrefixCallsCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1126:PrefixCallsCorrectly", Justification =
+            "Reviewed. Suppression is OK here.")]
         public Genpass()
         {
             InitializeComponent();

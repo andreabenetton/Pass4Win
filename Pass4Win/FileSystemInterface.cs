@@ -11,8 +11,6 @@
 */
 
 
-
-
 namespace Pass4Win
 {
     using System.Collections.Generic;
@@ -50,7 +48,7 @@ namespace Pass4Win
             _config = config;
             _directoryProvider = directoryProvider;
 
-            SearchList = new List<string> { "No", "Value" };
+            SearchList = new List<string> {"No", "Value"};
 
             //// Filling the Directory and search datatable
             this.UpdateDirectoryList(directoryProvider);
@@ -67,11 +65,12 @@ namespace Pass4Win
             this.SearchList.Clear();
             foreach (var file in _directoryProvider.GetFiles("*.gpg", SearchOption.AllDirectories))
             {
-                if(Regex.IsMatch(file.Name, this.WildcardToRegex(searchtext), RegexOptions.IgnoreCase))
+                if (Regex.IsMatch(file.Name, this.WildcardToRegex(searchtext), RegexOptions.IgnoreCase))
                 {
                     this.SearchList.Add(file.FullName);
                 }
             }
+
             if (SearchList.Count == 0)
             {
                 this.SearchList.Add("No Value");
@@ -99,7 +98,7 @@ namespace Pass4Win
             var nodeName = new StringBuilder();
             nodeName.Append(path.Name);
             nodeName.AppendFormat(" ({0})", path.EnumerateFiles().Count());
-            var node = new TreeNode(nodeName.ToString()) { Tag = path.FullName };
+            var node = new TreeNode(nodeName.ToString()) {Tag = path.FullName};
 
             foreach (var directory in path.GetDirectories())
             {
@@ -138,19 +137,21 @@ namespace Pass4Win
                     }
                 }
             }
+
             if (list.Count == 0)
             {
                 return null;
             }
+
             return list;
         }
 
         private string WildcardToRegex(string pattern)
         {
             return ".*" + Regex.Escape(pattern)
-                              .Replace(@"\*", ".*")
-                              .Replace(@"\?", ".")
-                       + ".*";
+                            .Replace(@"\*", ".*")
+                            .Replace(@"\?", ".")
+                        + ".*";
         }
     }
 }

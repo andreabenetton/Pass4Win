@@ -108,12 +108,12 @@ namespace Pass4Win
             // grouped by types. You can remove character groups from this
             // array, but doing so will weaken the password strength.
             char[][] charGroups = new char[][]
-                {
+            {
                 passwordCharsLcase.ToCharArray(),
                 passwordCharsUcase.ToCharArray(),
                 passwordCharsNumeric.ToCharArray(),
                 passwordCharsSpecial.ToCharArray()
-                };
+            };
 
             // Use this array to track the number of unused characters in each
             // character group.
@@ -151,7 +151,9 @@ namespace Pass4Win
             // This array will hold password characters.
 
             // Allocate appropriate memory for the password.
-            var password = minLength < maxLength ? new char[random.Next(minLength, maxLength + 1)] : new char[minLength];
+            var password = minLength < maxLength
+                ? new char[random.Next(minLength, maxLength + 1)]
+                : new char[minLength];
 
             // Index of the last non-processed group.
             int lastLeftGroupsOrderIdx = leftGroupsOrder.Length - 1;
@@ -203,7 +205,7 @@ namespace Pass4Win
                     {
                         char temp = charGroups[nextGroupIdx][lastCharIdx];
                         charGroups[nextGroupIdx][lastCharIdx] =
-                                    charGroups[nextGroupIdx][nextCharIdx];
+                            charGroups[nextGroupIdx][nextCharIdx];
                         charGroups[nextGroupIdx][nextCharIdx] = temp;
                     }
 
@@ -227,9 +229,10 @@ namespace Pass4Win
                     {
                         int temp = leftGroupsOrder[lastLeftGroupsOrderIdx];
                         leftGroupsOrder[lastLeftGroupsOrderIdx] =
-                                    leftGroupsOrder[nextLeftGroupsOrderIdx];
+                            leftGroupsOrder[nextLeftGroupsOrderIdx];
                         leftGroupsOrder[nextLeftGroupsOrderIdx] = temp;
                     }
+
                     // Decrement the number of unprocessed groups.
                     lastLeftGroupsOrderIdx--;
                 }

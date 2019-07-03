@@ -12,6 +12,5 @@ namespace Pass4Win
 
         [Option('g', "nogit", DefaultValue = false, HelpText = "Use git.")]
         public bool NoGit { get; set; }
-
     }
 }

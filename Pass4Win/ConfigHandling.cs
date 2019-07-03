@@ -12,7 +12,9 @@
         private static readonly ILog log = LogProvider.For<ConfigHandling>();
 
         private Dictionary<string, object> values = new Dictionary<string, object>();
-        private readonly IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
+
+        private readonly IsolatedStorageFile isoStore =
+            IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
 
         private string configName = "Pass4Win.json";
 
@@ -42,8 +44,8 @@
                 if (cachedPassValidTime == 0)
                 {
                     // this is a little paranoid, but a user may have edited the config by hand.
-                    if (! int.TryParse(this["PassValidTime"], out cachedPassValidTime) ||
-                        ! this.PassValidTimeValidator(cachedPassValidTime))
+                    if (!int.TryParse(this["PassValidTime"], out cachedPassValidTime) ||
+                        !this.PassValidTimeValidator(cachedPassValidTime))
                     {
                         cachedPassValidTime = defaultPassValidTime;
                     }
@@ -70,9 +72,10 @@
         {
             get
             {
-                try { 
+                try
+                {
                     return this.values[key];
-                } 
+                }
                 catch
                 {
                     return "";
@@ -89,10 +92,9 @@
         /// Saves the configuration to the disk.</summary>
         public void Save()
         {
-            cachedPassValidTime = 0;  // reset cache so a new config value will apply
+            cachedPassValidTime = 0; // reset cache so a new config value will apply
 
             log.Debug("Saving config");
-
 
 
             string json = SimpleJson.SerializeObject(this.values);

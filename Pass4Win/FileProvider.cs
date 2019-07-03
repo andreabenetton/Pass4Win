@@ -8,6 +8,7 @@ namespace Pass4Win
         string FullName { get; set; }
         string Extension { get; set; }
     }
+
     public class FileProvider : IFileProvider
     {
         private readonly FileInfo _fileInfo;

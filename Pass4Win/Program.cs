@@ -58,17 +58,16 @@ namespace Pass4Win
             {
                 if (createdNew)
                 {
-
                     if (Environment.OSVersion.Version.Major >= 6)
                     {
                         NativeMethods.SetProcessDPIAware();
                     }
+
                     log.Debug(() => "Load main form");
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     try
                     {
-
                         Application.Run(Scope.Resolve<FrmMain>());
                     }
                     catch (Exception message)
@@ -78,7 +77,6 @@ namespace Pass4Win
                             log.DebugException("MutexError", message);
                         }
                     }
-
                 }
                 else
                 {
@@ -106,6 +104,5 @@ namespace Pass4Win
 
             Scope = builder.Build().BeginLifetimeScope();
         }
-
     }
 }

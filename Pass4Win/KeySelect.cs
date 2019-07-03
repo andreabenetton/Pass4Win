@@ -35,18 +35,19 @@ namespace Pass4Win
             {
                 comboBox1.Items.Add(key.UserInfos[0].Email + "(" + key.Id + ")");
             }
-            if (comboBox1.Items.Count>0)
+
+            if (comboBox1.Items.Count > 0)
             {
                 comboBox1.SelectedIndex = 0;
             }
+
             TopMost = true;
         }
 
-         public string Gpgkey => comboBox1.Text.Split('(')[0];
+        public string Gpgkey => comboBox1.Text.Split('(')[0];
 
         private void BtnOkClick(object sender, EventArgs e)
         {
-
         }
     }
 }

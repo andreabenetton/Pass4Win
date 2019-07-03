@@ -23,13 +23,14 @@ namespace Pass4Win
         public FrmConfig(ConfigHandling config)
         {
             _config = config;
-            InitializeComponent();     
+            InitializeComponent();
 
             // fill in the blanks
             if (_config["FirstRun"] == false)
             {
                 // set config values
-                try {
+                try
+                {
                     txtPassFolder.Text = _config["PassDirectory"];
                     txtPassValidTime.Text = _config.PassValidTime.ToString();
                     txtGPG.Text = _config["GPGEXE"];
@@ -41,7 +42,9 @@ namespace Pass4Win
                     ExternalGit.Checked = _config["ExternalGit"];
                     ExternalGit.CheckedChanged += ExternalGit_CheckedChanged;
                 }
-                catch { }
+                catch
+                {
+                }
 
                 // set access
                 txtGitUser.ReadOnly = !chkboxRemoteRepo.Checked;
@@ -53,7 +56,8 @@ namespace Pass4Win
                 label4.Visible = chkboxRemoteRepo.Checked;
                 label5.Visible = chkboxRemoteRepo.Checked;
                 label6.Visible = chkboxRemoteRepo.Checked;
-            } else
+            }
+            else
             {
                 _config.ResetConfig();
                 _config["PassValidTime"] = _config.DefaultPassValidTime.ToString();
@@ -70,6 +74,7 @@ namespace Pass4Win
         /// Toggle to cancel on validate or not
         /// </summary>
         private bool valCancel;
+
         /// <summary>
         /// Toggle to get/set online state
         /// </summary>
@@ -176,7 +181,7 @@ namespace Pass4Win
         /// <param name="e"></param>
         private void TxtGitPassLeave(object sender, EventArgs e)
         {
-            _config["GitPass"] = FrmMain.EncryptConfig(txtGitPass.Text,"pass4win");
+            _config["GitPass"] = FrmMain.EncryptConfig(txtGitPass.Text, "pass4win");
         }
 
         /// <summary>
@@ -220,17 +225,17 @@ namespace Pass4Win
             else
             {
                 int value;
-                if (! int.TryParse(txtPassValidTime.Text, out value) ||
-                    ! _config.PassValidTimeValidator(value))
+                if (!int.TryParse(txtPassValidTime.Text, out value) ||
+                    !_config.PassValidTimeValidator(value))
                 {
                     errorProvider1.SetError(txtPassValidTime, String.Format(Strings.Error_invalid_PassValidTime,
-                                                                            _config.PassValidTimeBottom,
-                                                                            _config.PassValidTimeTop));
+                        _config.PassValidTimeBottom,
+                        _config.PassValidTimeTop));
                     valid = false;
                 }
             }
 
-            if (! valid && this.valCancel) e.Cancel = true;
+            if (!valid && this.valCancel) e.Cancel = true;
         }
 
         /// <summary>
@@ -308,7 +313,8 @@ namespace Pass4Win
                             errorProvider1.SetError(txtGitHost, Strings.Error_host_unreachable);
                             this.offline = true;
                         }
-                    } else
+                    }
+                    else
                     {
                         this.offline = false;
                     }
@@ -323,10 +329,11 @@ namespace Pass4Win
         /// <param name="e"></param>
         private void FrmConfigFormClosing(object sender, FormClosingEventArgs e)
         {
-            if ( (this.valCancel = _config["FirstRun"]) )
-                if (!ValidateChildren()) e.Cancel = true;
-                OnSendOffline(null);
-                this.valCancel = false;
+            if ((this.valCancel = _config["FirstRun"]))
+                if (!ValidateChildren())
+                    e.Cancel = true;
+            OnSendOffline(null);
+            this.valCancel = false;
         }
 
         /// <summary>
@@ -344,14 +351,14 @@ namespace Pass4Win
             _config["ExternalGit"] = ExternalGit.Checked;
             if (ExternalGit.Checked)
             {
-                MessageBox.Show(Strings.Config_ExternalGit_Warning, Strings.Config_ExternalGit_Warning_Title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(Strings.Config_ExternalGit_Warning, Strings.Config_ExternalGit_Warning_Title,
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 if (openFileDialog2.ShowDialog() == DialogResult.OK)
                 {
                     _config["ExternalGitLocation"] = openFileDialog2.FileName;
                     chkboxRemoteRepo.Checked = false;
                 }
             }
-                
         }
     }
 }

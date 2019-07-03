@@ -17,9 +17,7 @@ namespace Pass4Win
     using System.IO;
     using System.Linq;
     using System.Windows.Forms;
-
     using GpgApi;
-
     using LibGit2Sharp;
 
     /// <summary>
@@ -80,6 +78,7 @@ namespace Pass4Win
                         listBox1.Items.Add(line);
                     }
                 }
+
                 listBox1.SelectedIndex = 0;
             }
             else
@@ -102,8 +101,10 @@ namespace Pass4Win
                 {
                     listBox1.Items.Clear();
                 }
+
                 listBox1.Items.Add(_keySelect.Gpgkey);
-                string tmpFile = Path.GetDirectoryName(_config["PassDirectory"]) + "\\" + treeView1.SelectedNode.FullPath + "\\.gpg-id";
+                string tmpFile = Path.GetDirectoryName(_config["PassDirectory"]) + "\\" +
+                                 treeView1.SelectedNode.FullPath + "\\.gpg-id";
                 using (StreamWriter w = new StreamWriter(tmpFile))
                 {
                     foreach (var line in listBox1.Items)
@@ -112,17 +113,19 @@ namespace Pass4Win
                     }
                 }
 
-                DirectoryInfo path = new DirectoryInfo(Path.GetDirectoryName(_config["PassDirectory"]) + "\\" + treeView1.SelectedNode.FullPath);
+                DirectoryInfo path = new DirectoryInfo(Path.GetDirectoryName(_config["PassDirectory"]) + "\\" +
+                                                       treeView1.SelectedNode.FullPath);
 
                 foreach (var ffile in path.GetFiles())
                 {
                     if (!ffile.Name.StartsWith("."))
                         Recrypt(ffile.FullName);
                 }
-                
+
                 ScanDirectory(path);
             }
-            _keySelect.Close(); 
+
+            _keySelect.Close();
         }
 
         /// <summary>
@@ -140,6 +143,7 @@ namespace Pass4Win
                         this.Recrypt(ffile.FullName);
                     }
                 }
+
                 if (!directory.Name.StartsWith("."))
                 {
                     ScanDirectory(directory);
@@ -159,7 +163,8 @@ namespace Pass4Win
                 {
                     listBox1.Items.Remove(listBox1.SelectedItem);
                     listBox1.Refresh();
-                    string tmpFile = Path.GetDirectoryName(_config["PassDirectory"]) + "\\" + treeView1.SelectedNode.FullPath + "\\.gpg-id";
+                    string tmpFile = Path.GetDirectoryName(_config["PassDirectory"]) + "\\" +
+                                     treeView1.SelectedNode.FullPath + "\\.gpg-id";
                     File.Delete(tmpFile);
                     using (StreamWriter w = new StreamWriter(tmpFile))
                     {
@@ -168,13 +173,17 @@ namespace Pass4Win
                             w.WriteLine(line.ToString());
                         }
                     }
+
                     using (var repo = new Repository(_config["PassDirectory"]))
                     {
                         Commands.Stage(repo, tmpFile);
-                        repo.Commit("gpgid changed", new Signature("pass4win", "pass4win", DateTimeOffset.Now), new Signature("pass4win", "pass4win", DateTimeOffset.Now));
+                        repo.Commit("gpgid changed", new Signature("pass4win", "pass4win", DateTimeOffset.Now),
+                            new Signature("pass4win", "pass4win", DateTimeOffset.Now));
                     }
                 }
-            DirectoryInfo path = new DirectoryInfo(Path.GetDirectoryName(_config["PassDirectory"]) + "\\" + treeView1.SelectedNode.FullPath);
+
+            DirectoryInfo path = new DirectoryInfo(Path.GetDirectoryName(_config["PassDirectory"]) + "\\" +
+                                                   treeView1.SelectedNode.FullPath);
 
             foreach (var ffile in path.GetFiles().Where(ffile => !ffile.Name.StartsWith(".")))
             {
@@ -214,12 +223,15 @@ namespace Pass4Win
                 {
                     GpgListSecretKeys publicKeys = new GpgListSecretKeys();
                     publicKeys.Execute();
-                    recipients.AddRange(from key in publicKeys.Keys where key.UserInfos[0].Email == line.ToString() select key.Id);
+                    recipients.AddRange(from key in publicKeys.Keys
+                        where key.UserInfos[0].Email == line.ToString()
+                        select key.Id);
                 }
 
- 
+
                 string tmpFile2 = Path.GetTempFileName();
-                GpgEncrypt encrypt = new GpgEncrypt(tmpFile, tmpFile2, false, false, null, recipients, CipherAlgorithm.None);
+                GpgEncrypt encrypt = new GpgEncrypt(tmpFile, tmpFile2, false, false, null, recipients,
+                    CipherAlgorithm.None);
                 GpgInterfaceResult encResult = encrypt.Execute();
                 this.EncryptCallback(encResult, tmpFile, tmpFile2, path);
             }

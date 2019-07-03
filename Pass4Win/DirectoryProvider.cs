@@ -14,6 +14,7 @@ namespace Pass4Win
         IEnumerable<FileInfo> EnumerateFiles();
         IEnumerable<IDirectoryProvider> GetDirectories();
     }
+
     public class DirectoryProvider : IDirectoryProvider
     {
         private readonly ConfigHandling _config;
@@ -41,12 +42,14 @@ namespace Pass4Win
         {
             if (_directoryInfo?.Exists == false)
                 _directoryInfo.Create();
-            return _directoryInfo?.GetFiles().Select(f=>(IFileProvider)new FileProvider(f)).ToArray() ?? new IFileProvider[0];
+            return _directoryInfo?.GetFiles().Select(f => (IFileProvider) new FileProvider(f)).ToArray() ??
+                   new IFileProvider[0];
         }
 
         public IFileProvider[] GetFiles(string searchPattern, SearchOption searchOption)
         {
-            return _directoryInfo?.GetFiles(searchPattern, searchOption).Select(f=>(IFileProvider) new FileProvider(f)).ToArray() ?? new IFileProvider[0];
+            return _directoryInfo?.GetFiles(searchPattern, searchOption)
+                       .Select(f => (IFileProvider) new FileProvider(f)).ToArray() ?? new IFileProvider[0];
         }
 
         public string Name
@@ -68,7 +71,7 @@ namespace Pass4Win
 
         public IEnumerable<IDirectoryProvider> GetDirectories()
         {
-            return _directoryInfo.GetDirectories().Select(d=>new DirectoryProvider(d));
+            return _directoryInfo.GetDirectories().Select(d => new DirectoryProvider(d));
         }
     }
 }
